@@ -17,14 +17,21 @@ body {
 
 .titulo{
   background-color: #040f1f; 
-  height: 100%;
   padding: 40px;
   text-align: center;
-   max-width: 800px;
-   box-shadow: 0 0 10px rgba(0,0,0,0.5);
-    margin: 0 auto;
+  max-width: 1020px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  margin: 0 auto;
 }
 
+        .container {
+            max-width: 1020px;
+            margin: 5px auto;
+            padding: 20px;
+            background-color: #1e1e1ed3;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
 /*──────────────────────────────────────────────────────────────────────────────*/
 /*                               Tipografía                                   */
 /*──────────────────────────────────────────────────────────────────────────────*/
@@ -345,11 +352,10 @@ form {
 .botones-formulario {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 20px;
   justify-content: center;
 }
 .botones-formulario .boton {
-  flex: 1 1 140px;
   padding: 10px 20px;
   font-size: 1rem;
   background: rgba(0,255,136,0.85);
@@ -401,12 +407,14 @@ footer ul li a:hover {
     gap: 10px;
     margin-top: 10px;
   }
-   .introduccion {
+   .introduccion, .banner {
     height: 100vh; /* sigue ocupando toda la pantalla */
     padding: 60px 20px;
   
   }
-  .introduccion h1 { font-size: 2rem; }
+
+
+  .introduccion h1 , .banner h1 { font-size: 2rem; }
   .introduccion p { font-size: 1rem; }
   .introduccion .boton {
     padding: 0.6rem 1rem;
@@ -430,6 +438,231 @@ footer ul li a:hover {
   border-radius: 5px;
   text-align: center;
   margin: 1rem auto;
+  max-width: 500px;
+  font-weight: bold;
+}
+
+        ul {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        strong {
+            color: #FFFFFF;
+        }
+
+        .banner{
+           background: url(../imagenes/credit-premier-padel-29.jpeg) bottom/cover no-repeat;
+            color: #E0E0E0;
+            margin: 0;
+            padding: 0;
+        }
+
+
+
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500&display=swap');
+
+
+
+
+/* ──────────────────────────────── Menú Hamburguesa ──────────────────────────────── */
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 1000;
+    position: relative;
+}
+
+.menu-toggle .bar {
+    display: block;
+    width: 50px;
+    height: 3px;
+    background: #0f8;
+    margin: 5px 0;
+    transition: all 0.3s ease;
+}
+
+.mobile-menu {
+    position: fixed;
+    left: -300px;
+    top: 0;
+    width: 250px;
+    height: 100vh;
+    background: #040f1f;
+    z-index: 999;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 5px 0 15px rgba(0,255,136,0.2);
+}
+
+.mobile-menu.active {
+    left: 0;
+}
+
+.mobile-nav {
+    display: flex;
+    flex-direction: column;
+    padding: 80px 20px 20px;
+    gap: 15px;
+}
+
+.mobile-nav .enlace,
+.mobile-nav .boton {
+    width: 100%;
+    text-align: left;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+}
+
+/* Animación icono menú */
+.menu-toggle.active .bar:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.menu-toggle.active .bar:nth-child(2) {
+    opacity: 0;
+}
+
+.menu-toggle.active .bar:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -6px);
+}
+
+/* ──────────────────────────────── Responsividad ──────────────────────────────── */
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: block;
+    }
+    
+    .nav-main {
+        display: none;
+    }
+    
+    .mobile-menu {
+        display: block;
+    }
+    
+    /* Ajustes logo */
+    .logo img {
+        height: 70px;
+        width: 70px;
+    }
+    
+    /* Asegurar contenido no se desborde */
+    .banner {
+        padding-top: 80px;
+    }
+}
+
+
+/* ──────────────────────────────── Equipos ──────────────────────────────── */
+.container-equipos {
+    max-width: 1020px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+.titulo-equipos {
+    text-align: center;
+    color: #0f8;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    text-shadow: 0 0 10px rgba(15, 255, 136, 0.3);
+}
+
+.contenedor-acordeon {
+    background: #1e1e1e;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.acordeon {
+    background: #2a2a2a;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+    border: 1px solid #0f83;
+}
+
+.acordeon[open] {
+    background: #333;
+    border-color: #0f8;
+    box-shadow: 0 0 15px rgba(15, 255, 136, 0.2);
+}
+
+.acordeon-titulo {
+    padding: 1rem 1.5rem;
+    font-size: 1.2rem;
+    color: #0f8;
+    text-shadow: 1px 2px 5px #005288;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    list-style: none;
+    transition: background 0.3s ease;
+}
+
+.acordeon-titulo::-webkit-details-marker {
+    display: none;
+}
+
+.acordeon-titulo:hover {
+    background: #363636;
+}
+
+.flecha {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-right: 2px solid #0f8;
+    border-bottom: 2px solid #0f8;
+    transform: rotate(45deg);
+    transition: transform 0.3s ease;
+    margin-left: 15px;
+}
+
+.acordeon[open] .flecha {
+    transform: rotate(225deg);
+}
+
+.acordeon-contenido {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #0f83;
+    color: #ddd;
+    line-height: 1.6;
+}
+
+.acordeon-contenido strong {
+    color: #0f8;
+    font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container-equipos {
+        padding: 15px;
+    }
+    
+    .titulo-equipos {
+        font-size: 2rem;
+    }
+    
+    .acordeon-titulo {
+        font-size: 1.1rem;
+        padding: 0.8rem 1rem;
+    }
+    
+    .acordeon-contenido {
+        padding: 0.8rem 1rem;
+        font-size: 0.95rem;
+    }
+}
   max-width: 500px;
   font-weight: bold;
 }
