@@ -4,66 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reglamento Liga de Pádel Primavera 2025</title>
-        <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="./css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="shortcut icon" href="./imagenes/Logojafs.png" type="image/x-icon">
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: url(./imagenes/credit-premier-padel-29.jpeg) bottom/cover no-repeat;
-            color: #E0E0E0;
-            margin: 0;
-            padding: 0;
-        }
-        
-        h1 {
-            margin: 0;
-            font-size: 2em;
-            color: #FFFFFF;
-            text-align: center;
-        }
-        .container {
-            max-width: 800px;
-            margin: 5px auto;
-            padding: 20px;
-            background-color: #1e1e1ede;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
-        }
-        h2 {
-            color: #BB86FC;
-            border-bottom: 1px solid #BB86FC;
-            padding-bottom: 5px;
-        }
-        ul {
-            list-style-type: disc;
-            padding-left: 20px;
-        }
-        li {
-            margin-bottom: 10px;
-        }
-        strong {
-            color: #FFFFFF;
-        }
-    </style>
 </head>
 <body>
     <header>
         <div class="logo">
             <img src="./imagenes/Logojafs.png" alt="Logo de JafsPadel League" width="100" height="100">
         </div>
+        
+        <!-- Botón menú hamburguesa -->
+        <button class="menu-toggle" aria-label="Abrir menú">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
 
-        <nav>
-         <a href="#" class="enlace" onclick="alert('No disponible, Periodo de inscripciones')">Iniciar Sesión</a>
-         <a href="./index.html" class="boton">Crear Usuario</a>
-         <a href="./reglas.html" class="enlace">Reglamento Oficial</a>
+        <nav class="nav-main">
+            <a href="#" class="enlace" onclick="alert('No disponible, Periodo de inscripciones')">Iniciar Sesión</a>
+            <a href="./index.html" class="boton">Crear Usuario</a>
+            <a href="./reglas.html" class="enlace">Reglamento Oficial</a>
+            <a href="./assets/equipos.html" class="enlace">Equipos</a>
         </nav>
-
     </header>
+
+    <!-- Menú lateral móvil -->
+    <aside class="mobile-menu">
+        <nav class="mobile-nav">
+            <a href="#" class="enlace" onclick="alert('No disponible, Periodo de inscripciones')">Iniciar Sesión</a>
+            <a href="./index.html" class="boton">Crear Usuario</a>
+            <a href="./reglas.html" class="enlace">Reglamento Oficial</a>
+            <a href="./assets/equipos.html" class="enlace">Equipos</a>
+        </nav>
+    </aside>
+    <div class="banner">
+  
     <div class="titulo">
     <h1>🏆 Liga de Pádel Primavera 2025 – Reglamento Oficial</h1>
     </div>
     <div class="container">
+        <div class="contenedor">
         <h2>📅 Fechas y Formato</h2>
         <ul>
             <li><strong>Duración:</strong> del 19 de mayo al 22 de junio de 2025.</li>
@@ -131,6 +112,10 @@
             <li><strong>Conducta antideportiva:</strong> cualquier comportamiento inapropiado será sancionado por la organización, pudiendo llegar a la expulsión de la liga.</li>
             <li><strong>Resolución de conflictos:</strong> la organización actuará como comité de competición para resolver cualquier disputa o incidencia.</li>
         </ul>
+        </div>
     </div>
+    </div>
+            <a href="#"><img class="arrowcircle" src="./imagenes/arrow-circle-up-svgrepo-com.svg" alt="flechacircular" width="40" height="40"></a>
+    <script src="./js/menu.js"></script>
 </body>
-</html
+</html>
