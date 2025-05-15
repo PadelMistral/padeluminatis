@@ -10,26 +10,42 @@
     
 </head>
 <body>
+
     <!-- Header -->
     <header>
-
         <div class="logo">
             <img src="./imagenes/Logojafs.png" alt="Logo de JafsPadel League" width="100" height="100">
         </div>
+        
+        <!-- Botón menú hamburguesa -->
+        <button class="menu-toggle" aria-label="Abrir menú">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
 
-        <nav>
-         <a href="#" class="enlace" onclick="alert('No disponible, Periodo de inscripciones')">Iniciar Sesión</a>
-
-            <a href="#formulario-registro" class="boton">Crear Usuario</a>
-            <a href="reglas.html" class="enlace">Reglamento Oficial</a>
+        <nav class="nav-main">
+            <a href="#" class="enlace" onclick="alert('No disponible, Periodo de inscripciones')">Iniciar Sesión</a>
+            <a href="./index.html" class="boton">Crear Usuario</a>
+            <a href="./reglas.html" class="enlace">Reglamento Oficial</a>
+            <a href="./assets/equipos.html" class="enlace">Equipos</a>
         </nav>
-
     </header>
+
+    <!-- Menú lateral móvil -->
+    <aside class="mobile-menu">
+        <nav class="mobile-nav">
+            <a href="#" class="enlace" onclick="alert('No disponible, Periodo de inscripciones')">Iniciar Sesión</a>
+            <a href="./index.html" class="boton">Crear Usuario</a>
+            <a href="./reglas.html" class="enlace">Reglamento Oficial</a>
+            <a href="./assets/equipos.html" class="enlace">Equipos</a>
+        </nav>
+    </aside>
 
     <!-- Main: Todo el contenido -->
     <main>
 
-   
+
     
     <!-- Introducción: Primera Linea de Pagina -->
         <section class="introduccion">
@@ -160,7 +176,7 @@
                         <option value="Piso10">Piso 10</option>
                         <option value="Piso11">Piso 11</option>
                         <option value="Piso12">Piso 12</option>
-                        
+
                     </select>
                     <select name="puerta" id="puerta">
                         <option value="A">Puerta A</option>
@@ -235,7 +251,8 @@
     </footer>
     <script src="./js/codigo.js"></script>
     <script src="./js/confirmacion.js"></script>
-     <!-- Flecha/enlace para volver al header  -->
+    <script src="./js/menu.js"></script>
+    <!-- Flecha/enlace para volver al header  -->
         <a href="#"><img class="arrowcircle" src="./imagenes/arrow-circle-up-svgrepo-com.svg" alt="flechacircular" width="40" height="40"></a>
 </body>
 </html>
