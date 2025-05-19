@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendario de Liga</title>
+  <!-- Google Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Montserrat:wght@300;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    /* CSS Variables for Theme */
+    :root {
+      --bg: #101018;
+      --accent: #00ff8a;
+      --light: #e0f7fa;
+      --team1: #4caf50;
+      --team2: #f50057;
+      --rest: #ff8a80;
+      --card-bg: rgba(16, 16, 24, 0.8);
+      --shadow: rgba(0, 255, 138, 0.3);
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    details {
+      background: var(--card-bg);
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px var(--shadow);
+      overflow: hidden;
+      transition: transform 0.2s;
+    }
+    details:hover { transform: scale(1.01); }
+    summary {
+      font-size: 1.5rem;
+      padding: 16px;
+      cursor: pointer;
+      position: relative;
+      font-weight: 600;
+      list-style: none;
+      color: var(--accent);
+      background: rgba(0,0,0,0.2);
+    }
+    summary::after {
+      content: '+';
+      position: absolute;
+      right: 20px;
+      font-size: 1.5rem;
+      transition: transform 0.2s;
+    }
+    details[open] summary::after {
+      content: '×';
+      transform: rotate(0deg);
+    }
+    .matches {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      padding: 16px;
+    }
+    .match {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      background: rgba(255,255,255,0.05);
+      padding: 12px 16px;
+      border-radius: 6px;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    .match:hover {
+      background: rgba(255,255,255,0.1);
+      box-shadow: 0 2px 8px var(--shadow);
+    }
+    .team-name {
+      font-size: 1.1rem;
+      font-weight: 500;
+      text-align: center;
+    }
+    .team1 { color: var(--team1); }
+    .team2 { color: var(--team2); }
+    .vs { margin: 0 10px; color: var(--light); font-weight: 300; }
+    .rest {
+      font-size: 1.1rem;
+      color: var(--rest);
+      text-align: center;
+      font-style: italic;
+      padding: 12px;
+      background: rgba(255,138,138,0.1);
+      border-radius: 6px;
+    }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const teams = [
+        'Juanan y Jorge','Victor y Mario','Nestor y Paco','Rafa y Pedro',
+        'Vissen y Luis','Juan Luis y Raico','Jaime y Manu','Jaime.P. y Jose',
+        'Andres y Jose Manuel','Sergio y Santi','Javi y Adri'
+      ];
+      // Round-robin algorithm for odd count
+      const rounds = teams.length;
+      const ghost = 'Descanso';
+      const list = [...teams];
+      list.push(ghost);
+      const half = list.length / 2;
+
+      function generateSchedule() {
+        const schedule = [];
+        const arr = list.slice();
+        for (let round = 0; round < arr.length - 1; round++) {
+          const pairs = [];
+          for (let i = 0; i < half; i++) {
+            const teamA = arr[i];
+            const teamB = arr[arr.length - 1 - i];
+            pairs.push([teamA, teamB]);
+          }
+          schedule.push(pairs);
+          // Rotate
+          arr.splice(1, 0, arr.pop());
+        }
+        return schedule;
+      }
+
+      const schedule = generateSchedule();
+      const container = document.querySelector('.container');
+      schedule.forEach((pairs, idx) => {
+        const details = document.createElement('details');
+        if (idx === 0) details.open = true;
+        const summary = document.createElement('summary');
+        summary.textContent = `Jornada ${idx + 1}`;
+        const matchesDiv = document.createElement('div');
+        matchesDiv.className = 'matches';
+        pairs.forEach(pair => {
+          if (pair.includes(ghost)) {
+            const restDiv = document.createElement('div');
+            restDiv.className = 'rest';
+            restDiv.textContent = `Descansa: ${pair[0] === ghost ? pair[1] : pair[0]}`;
+            matchesDiv.appendChild(restDiv);
+          } else {
+            const matchDiv = document.createElement('div');
+            matchDiv.className = 'match';
+            const team1 = document.createElement('div'); team1.className = 'team-name team1'; team1.textContent = pair[0];
+            const vs = document.createElement('div'); vs.className = 'vs'; vs.textContent = 'VS';
+            const team2 = document.createElement('div'); team2.className = 'team-name team2'; team2.textContent = pair[1];
+            matchDiv.append(team1, vs, team2);
+            matchesDiv.appendChild(matchDiv);
+          }
+        });
+        details.append(summary, matchesDiv);
+        container.appendChild(details);
+      });
+      // Collapse others
+      const items = document.querySelectorAll('details');
+      items.forEach(el => el.addEventListener('toggle', () => {
+        if (el.open) items.forEach(other => { if (other !== el) other.open = false; });
+      }));
+    });
+  </script>
+</head>
+<body>
+      <header>
+        <div class="logo">
+            <img src="../imagenes/Logojafs.png" alt="Logo de JafsPadel League" width="100" height="100">
+        </div>
+        
+        <!-- Botón menú hamburguesa -->
+        <button class="menu-toggle" aria-label="Abrir menú">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+
+        <nav class="nav-main">
+            <a href="#" class="enlace" onclick="alert('No disponible, Periodo de inscripciones')">Iniciar Sesión</a>
+            <a href="../index.html" class="boton">Crear Usuario</a>
+            <a href="../reglas.html" class="enlace">Reglamento Oficial</a>
+            <a href="./equipos.html" class="enlace">Equipos</a>
+            <a href="./jornadas.html" class="enlace">Calendario</a>
+        </nav>
+    </header>
+
+    <!-- Menú lateral móvil -->
+    <aside class="mobile-menu">
+        <nav class="mobile-nav">
+            <a href="#" class="enlace" onclick="alert('No disponible, Periodo de inscripciones')">Iniciar Sesión</a>
+            <a href="../index.html" class="boton">Crear Usuario</a>
+            <a href="../reglas.html" class="enlace">Reglamento Oficial</a>
+            <a href="./equipos.html" class="enlace">Equipos</a>
+            <a href="./jornadas.html" class="enlace">Calendario</a>
+        </nav>
+    </aside>
+    <div class="titulo">
+  <h1 class="titulo-equipos">Calendario de Liga</h1>
+  </div>
+  <div class="container"></div>
+  <script src="../js/menu.js"></script>
+</body>
+</html>
