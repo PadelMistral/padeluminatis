@@ -6,6 +6,22 @@
   <title>Login - Liga de Pádel</title>
   <link rel="stylesheet" href="./css/estilo.css" />
   <link rel="shortcut icon" href="./imagenes/Logojafs.png" type="image/x-icon">
+<!-- Enlace al manifest.json (para instalación como app) -->
+<link rel="manifest" href="/padeluminatis/manifest.json">
+
+<!-- Color de tema para la barra de estado móvil -->
+<meta name="theme-color" content="#FF6B35">
+
+<!-- Registro del Service Worker -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/padeluminatis/service-worker.js')
+        .then(reg => console.log('✅ Service Worker registrado con éxito'))
+        .catch(err => console.error('❌ Error al registrar:', err));
+    });
+  }
+</script>
 </head>
 <body class="fondo">
   <div class="contenedor-login">
