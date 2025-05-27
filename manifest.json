@@ -2,7 +2,7 @@
   "name": "Liga de Pádel",
   "short_name": "JafsPadel",
   "description": "Liga profesional de pádel con estadísticas en vivo y rankings",
-  "start_url": "/padeluminatis",
+  "start_url": "/padeluminatis/",
   "display": "standalone",
   "background_color": "#004E89",
   "theme_color": "#FF6B35",
