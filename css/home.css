@@ -1,0 +1,316 @@
+:root {
+    --color-primario: #0d1b2a;
+    --color-secundario: #1b263b;
+    --acento: #2a9d8f;
+    --texto: #e0e1dd;
+    --degradado: linear-gradient(135deg, #2a9d8f 0%, #76c893 100%);
+    --sombra: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Animaciones */
+@keyframes slideIn {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes pageLoad {
+  0%   { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+body > * {
+  animation: pageLoad 0.8s ease-out both;
+}
+.mensaje-bienvenida {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(13, 27, 42, 0.95);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.contenido-bienvenida {
+    text-align: center;
+    padding: 2rem;
+    background: var(--color-secundario);
+    border-radius: 16px;
+    box-shadow: var(--sombra);
+    transform: scale(0);
+    animation: scaleUp 0.5s 0.3s ease-out forwards;
+}
+
+@keyframes scaleUp {
+    to { transform: scale(1); }
+}
+
+.seccion-destacados {
+    padding: 2rem;
+     background: linear-gradient(transparent, rgb(13, 27, 42), transparent);
+     box-shadow: 0 0px 10px rgb(142, 226, 184);
+    color: rgba(45, 255, 202, 0.808);
+    text-shadow: 1px 1px 2px rgb(207, 255, 95), 0px 0px 1px rgb(0, 0, 0), 2px 2px 1px rgb(0, 0, 0);
+    margin: 2rem auto;
+    border-radius: 16px;
+    max-width: 800px;
+    animation: slideIn 0.6s ease-out;
+}
+
+.seccion-destacados h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    text-align: center;
+        color: rgba(45, 255, 202, 0.808);
+    text-shadow: 1px 1px 2px rgb(207, 255, 95), 0px 0px 1px rgb(0, 0, 0), 2px 2px 1px rgb(0, 0, 0), 3px 3px 3px rgb(0, 0, 0);
+}
+
+.seccion-tarjetas h2{
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    color: rgba(45, 255, 202, 0.808);
+    text-shadow: 1px 1px 2px rgb(207, 255, 95), 0px 0px 1px rgb(0, 0, 0), 2px 2px 1px rgb(0, 0, 0), 3px 3px 3px rgb(0, 0, 0);
+}
+
+.proximo-partido {
+    text-align: center;
+}
+
+.vs{
+    font-size: 1.6rem;
+    color: greenyellow;
+    margin: 3rem 1em;
+}
+
+.fecha{
+    font-size: .95rem;
+    color: rgb(255, 255, 255);
+    margin-top: 0.5rem;
+}
+
+.equipos{
+
+    color:#0f8;
+}
+
+.info-partido{
+    background: rgba(67, 192, 165, 0.151);
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-top: 1rem;
+    font-size: 1.2rem;
+}
+
+.seccion-pendientes {
+    max-width: 800px;
+    margin: 2rem auto;
+    animation: slideIn 0.6s 0.2s ease-out forwards;
+}
+
+.lista-partidos {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1rem;
+   
+}
+
+.partidos-pendientes {
+    
+    color: rgb(255, 255, 255);
+    text-shadow: 0px 0px 2px rgb(0, 0, 0);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.3s ease;
+    
+}
+
+.partidos-pendientes:hover {
+    transform: translateX(10px);
+}
+
+.lista-partidos {
+  width: 100%;
+  display: flex;  
+  flex-direction: column;
+  align-items: center;  
+  justify-content: space-between;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    padding: 10px;
+    color: var(--texto);
+    
+}
+.seccion-accesos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 3rem auto;
+    padding: 0 1rem;
+}
+
+.tarjeta-acceso {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.tarjeta-imagen {
+    height: 250px;
+    overflow: hidden;
+}
+
+.tarjeta-imagen img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.tarjeta-contenido {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(13, 27, 42, 0.9));
+    color: var(--texto);
+    padding: 2rem;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+}
+
+.tarjeta-acceso:hover .tarjeta-contenido {
+    transform: translateY(0);
+}
+
+.tarjeta-acceso:hover img {
+    transform: scale(1.1);
+}
+
+.boton-cta {
+    display: inline-block;
+    padding: 0.8rem 1.5rem;
+    background: var(--acento);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    margin-top: 1rem;
+    transition: background 0.3s ease;
+}
+
+.boton-cta:hover {
+    background: #238175;
+}
+
+@media (max-width: 768px) {
+    .seccion-destacada {
+        margin: 1rem;
+        padding: 1rem;
+    }
+    
+    .tarjeta-contenido {
+        padding: 1rem;
+    }
+}
+
+
+.tarjetas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  min-width: 95%;
+  min-height: 70%;  
+}
+
+.tarjeta {
+  width: 400px;
+  height: 480px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease-in-out;
+  text-align: center;
+}
+
+.tarjeta img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 10;
+  border-radius: 0px;
+  transition: all 0.3s ease-in-out;
+}
+
+.tarjeta h3 {
+  font-size: 1.25rem;
+  color: #0f8;
+  
+}
+
+.tarjeta p {
+  font-size: 0.9rem;
+  color: #c4c4c4;
+}
+
+.tarjeta a {
+  padding: 10px 15px;
+  background-color: #00ff88b7;
+  color: #ebebeb;
+  text-shadow: 1px 1px 1px black;
+  font-size: 0.9rem;
+  text-decoration: none;
+  border-radius: 20px;
+  transition: all 0.3s ease-in-out;
+}
+
+.contenido-tarjeta{
+ background: linear-gradient(transparent, rgb(13, 27, 42), transparent);
+  height: 200px;
+  padding: 20px;
+  transform: translateY(-200px);
+  transition: transform ease-in-out 0.6s;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+}
+
+ .contenido-tarjeta img{
+  height: auto;
+  width: 40px;
+  margin-top: 40px;
+  border-radius: 50%;
+  transition: opacity ease-in-out .6s;
+}
+
+/* Transiciones Tarjetas */
+.tarjeta:hover {
+  transform: translateY(-40px);
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.tarjeta:hover .contenido-tarjeta {
+  transform: translate(0px);
+}
+
+.tarjeta:hover .contenido-tarjeta img{
+  opacity: 0;
+}
+
+.tarjeta a:hover {
+  background-color: #0f8;
+  color: white;
+  
+}

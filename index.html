@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - Liga de Pádel</title>
+  <link rel="stylesheet" href="./css/estilo.css" />
+  <link rel="shortcut icon" href="./imagenes/Logojafs.png" type="image/x-icon">
+</head>
+<body class="fondo">
+  <div class="contenedor-login">
+    <div class="tituloLog"><h1 class="titulo">Iniciar sesión</h1>
+           <div class="logo">
+            <img src="./imagenes/Logojafs.png" alt="Logo de JafsPadel League" width="100" height="100">
+        </div>
+        </div>
+    <!-- FORMULARIO DE LOGIN -->
+    <form id="loginForm" class="formulario-login">
+      <div class="input-group">
+        <i class="fas fa-user"></i>
+        <input type="email" id="email" placeholder="Usuario o Email" class="input-texto" required />
+      </div>
+      <div class="input-group">
+        <i class="fas fa-lock"></i>
+        <input type="password" id="password" placeholder="Contraseña" class="input-texto" required />
+      </div>
+      <button type="submit" class="boton-enviar-especial">Entrar</button>
+    </form>
+
+    <!-- MENSAJE DE ERROR O BIENVENIDA -->
+    <div id="mensaje" style="color: white; text-align: center; margin-top: 10px;"></div>
+
+    <p class="texto-registro">
+      ¿No tienes cuenta? <a href="registro.html">Regístrate</a>
+    </p>
+      <p class="texto-registro">
+  <a href="recuperar.html">¿Has olvidado la contraseña?</a>
+</p>
+  </div>
+
+
+
+
+  <!-- Font Awesome para iconos -->
+
+
+  <!-- Llamada al JS externo -->
+  <script type="module" src="./js/login.js"></script>
+</body>
+</html>

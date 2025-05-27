@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clasificación - Liga de Pádel</title>
+  <link rel="stylesheet" href="./css/clasificacion.css">
+  <link rel="stylesheet" href="./css/estilo.css">
+  <link rel="shortcut icon" href="./imagenes/Logojafs.png" type="image/x-icon">
+</head>
+<body class="pagina-principal">
+  <header class="encabezado">
+               <div class="logo">
+            <img src="./imagenes/Logojafs.png" alt="Logo de JafsPadel League" width="100" height="100">
+        </div>
+    <h1 class="titulo">Clasificación</h1>
+
+<button class="menu-hamburguesa" 
+        aria-label="Menú principal"
+        aria-expanded="false"
+        aria-controls="menu-navegacion">
+    <span class="linea-hamburguesa"></span>
+    <span class="linea-hamburguesa"></span>
+    <span class="linea-hamburguesa"></span>
+</button>
+    <nav class="menu-navegacion">
+      <ul>
+        <li><a href="./home.html">Inicio</a></li>
+        <li><a href="./calendario.html">Calendario</a></li>
+        <li><a href="./clasificacion.html">Clasificación</a></li>
+        <li><a href="./chat.html">Chat</a></li>
+        <li><a href="./normas.html">Normas</a></li>
+        <li><a href="./perfil.html">Perfil</a></li>
+        <li><a id="link-admin" href="./admin.html" style="display: none;">Admin</a></li>
+        <li><a href="./index.html">Cerrar sesión</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="contenido-principal">
+     <script type="module" src="./js/clasificacion.js"></script>
+
+
+<h1>Clasificacion General</h1>
+  
+  <div class="tabla-responsive-wrapper">
+  <table id="tabla-clasificacion"></table>
+  </div>
+  </main>
+  <script src="./js/menu-hamburguesa.js"></script>
+  <script type="module" src="./js/enlaceAdmin.js"></script>
+</body>
+</html>

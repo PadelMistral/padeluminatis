@@ -1,0 +1,472 @@
+/* Reset básico y body */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background:url(https://png.pngtree.com/background/20211217/original/pngtree-matrix-code-abstract-programming-background-picture-image_1593627.jpg) no-repeat top /cover fixed;
+  color: #cfd8dc;
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Contenedor principal */
+.contenedor-principal {
+  max-width: 1100px;
+  margin: 3rem auto 4rem auto;
+  padding: 0 1.2rem;
+}
+
+/* Header */
+.encabezado {
+  background-color: #1e1e2f;
+  padding: 1.2rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 3px 10px #0008;
+  border-radius: 0 0 12px 12px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.encabezado .titulo {
+  color: #00cfc8;
+  font-size: 1.9rem;
+  font-weight: 700;
+  text-shadow: 0 0 8px #00cfc880;
+}
+
+/* Navegación */
+.menu-navegacion ul {
+  list-style: none;
+  display: flex;
+  gap: 1.4rem;
+}
+
+.menu-navegacion a {
+  color: #cfd8dc;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.menu-navegacion a:hover,
+.menu-navegacion a:focus {
+  background-color: #00cfc8;
+  color: #121212;
+  outline: none;
+  box-shadow: 0 0 8px #00cfc8cc;
+}
+
+/* Secciones de admin */
+.seccion-admin {
+  background-color: #1e1e2f;
+  border-radius: 14px;
+  box-shadow: 0 4px 18px rgba(0, 207, 200, 0.25);
+  margin-bottom: 2.5rem;
+  padding: 2rem 2.4rem;
+  transition: box-shadow 0.4s ease;
+}
+
+.seccion-admin:hover {
+  box-shadow: 0 6px 28px rgba(0, 207, 200, 0.35);
+}
+
+.seccion-admin h2 {
+  color: #00cfc8;
+  margin-bottom: 1.4rem;
+  font-size: 1.8rem;
+  font-weight: 700;
+  text-shadow: 0 0 10px #00cfc8aa;
+  letter-spacing: 0.04em;
+}
+
+/* Tarjetas */
+.tarjeta {
+  background: #252a3a;
+  border-radius: 12px;
+  padding: 1.6rem 2rem;
+  box-shadow: inset 0 0 12px #00cfc844;
+  margin-bottom: 1.8rem;
+  transition: background-color 0.3s ease;
+}
+
+.tarjeta:hover {
+  background: #2d344a;
+}
+
+/* Formularios */
+.form-equipo,
+.form-jornada {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.select-jugador,
+.input-text {
+  flex: 1 1 220px;
+  padding: 0.8rem 1rem;
+  border-radius: 10px;
+  border: 2px solid #00cfc870;
+  background-color: #181f2b;
+  color: #cfd8dc;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.select-jugador:focus,
+.input-text:focus {
+  outline: none;
+  border-color: #00cfc8;
+  box-shadow: 0 0 10px #00cfc8cc;
+}
+
+/* Botones */
+.boton-accion {
+  background-color: #00cfc8;
+  color: #121212;
+  font-weight: 700;
+  padding: 0.8rem 1.6rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 0 18px #00cfc8cc;
+  transition: background-color 0.3s ease, transform 0.15s ease, box-shadow 0.3s ease;
+  flex-shrink: 0;
+  
+}
+
+.boton-accion.secundario {
+  background-color: #00a8a5;
+  box-shadow: 0 0 12px #008f8caa;
+}
+
+.boton-accion:hover {
+  background-color: #00bbb6;
+  transform: translateY(-2px);
+  box-shadow: 0 0 25px #00cfc8dd;
+}
+
+.boton-accion:active {
+  transform: translateY(0);
+  box-shadow: 0 0 10px #00cfc880;
+}
+
+/* Listas */
+.lista-equipos,
+.lista-usuarios,
+.lista-partidos-admin {
+  list-style: none;
+  margin-top: 1rem;
+  max-height: 300px;
+  overflow-y: auto;
+
+}
+
+.lista-equipos li,
+.lista-usuarios li,
+.partido {
+  background-color: #2a2f41;
+  margin-bottom: 0.8rem;
+  padding: 1rem 1.4rem;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #cfd8dc;
+  box-shadow: 0 0 8px #00000050;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  cursor: default;
+}
+
+.lista-equipos li:hover,
+.lista-usuarios li:hover,
+.partido:hover {
+  background-color: #00cfc85c;
+  box-shadow: 0 0 14px #00cfc8cc;
+  color: #121212;
+}
+
+/* VS destacado */
+.vs {
+  font-weight: 700;
+  color: #e74c3c;
+  font-size: 1.2rem;
+  margin: 0 0.7rem;
+  
+}
+
+/* Input-group para scores */
+.input-group {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.input-group input {
+  width: 55px;
+  padding: 0.5rem 0.6rem;
+  border-radius: 8px;
+  border: 2px solid #00cfc870;
+  background: #1e2836;
+  color: #cfd8dc;
+  font-weight: 600;
+  text-align: center;
+  transition: border-color 0.3s ease;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: #00cfc8;
+  box-shadow: 0 0 10px #00cfc8cc;
+}
+
+/* Editor admin */
+.editor-admin {
+  background-color: #2c3448;
+  padding: 1rem;
+  border-radius: 10px;
+  margin-top: 1rem;
+  color: #cfd8dc;
+  font-size: 1rem;
+  min-height: 80px;
+  box-shadow: inset 0 0 8px #00cfc844;
+}
+
+/* Scrollbar personalizado */
+.lista-equipos::-webkit-scrollbar,
+.lista-usuarios::-webkit-scrollbar,
+.lista-partidos-admin::-webkit-scrollbar {
+  width: 8px;
+}
+
+.lista-equipos::-webkit-scrollbar-thumb,
+.lista-usuarios::-webkit-scrollbar-thumb,
+.lista-partidos-admin::-webkit-scrollbar-thumb {
+  background-color: #00cfc8aa;
+  border-radius: 20px;
+}
+
+.lista-equipos::-webkit-scrollbar-track,
+.lista-usuarios::-webkit-scrollbar-track,
+.lista-partidos-admin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Responsive */
+
+/* Tablets */
+@media (max-width: 900px) {
+  .contenedor-principal {
+    margin: 2rem auto 3rem auto;
+    padding: 0 1rem;
+  }
+
+  .form-equipo,
+  .form-jornada {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .boton-accion {
+    width: 100%;
+    flex-shrink: 0;
+  }
+}
+
+/* Móviles */
+@media (max-width: 480px) {
+  .encabezado {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .menu-navegacion ul {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .form-equipo,
+  .form-jornada {
+    gap: 0.6rem;
+  }
+
+  .select-jugador,
+  .input-text {
+    flex: 1 1 100%;
+  }
+}
+
+/* Animaciones fade-in suave para secciones */
+@keyframes fadeSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.seccion-admin {
+  animation: fadeSlideUp 0.7s ease forwards;
+}
+
+/* Focus visible accesible */
+:focus-visible {
+  outline: 3px solid #00cfc8;
+  outline-offset: 2px;
+}
+/* ESTILOS GENERALES */
+button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s;
+  margin: 2px;
+  font-size: 14px;
+}
+
+/* BOTONES DE ACCIÓN */
+.editar-resultado, .editar-fecha, .editar-nombre-btn {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.borrar-partido, .eliminar-usuario, .eliminar-equipo, .rechazar {
+  background-color: #f44336;
+  color: white;
+}
+
+.aprobar {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.cancelar-edicion {
+  background-color: #ff9800;
+  color: white;
+}
+
+button[type="submit"], .guardar-nombre-btn {
+  background-color: #2196F3;
+  color: white;
+}
+
+/* EFECTOS HOVER */
+button:hover {
+  opacity: 0.8;
+  transform: scale(1.02);
+}
+
+/* LISTA DE USUARIOS */
+#lista-usuarios li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  background: #fff;
+  border-radius: 4px;
+  margin-bottom: 5px;
+}
+
+.usuario-item {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+}
+
+.edit-nombre {
+  padding: 6px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  flex-grow: 1;
+}
+
+/* TARJETAS DE PARTIDOS */
+.admin-partido-card {
+  background: #fff;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.partido-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.partido-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.resultado-display {
+  margin: 10px 0;
+  padding: 10px;
+  background: #e9f7ef;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+/* FORMULARIOS */
+.form-editar-resultado {
+  background: #f5f5f5;
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.form-actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 5px;
+}
+
+/* PARTIDOS PENDIENTES */
+.pendiente-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background: #fff;
+  border-radius: 4px;
+  margin-bottom: 5px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.pendiente-actions {
+  display: flex;
+  gap: 5px;
+}
+
+/* SELECTORES */
+select, input[type="datetime-local"] {
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  margin: 5px 0;
+}

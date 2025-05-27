@@ -1,0 +1,244 @@
+/* === Versión suave y con logos === */
+
+body.pagina-principal {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #121212;
+  color: #f0f0f0;
+  margin: 0;
+  padding: 0;
+  line-height: 1.5;
+  scroll-behavior: smooth;
+  animation: fadeSlideUp 0.6s ease;
+}
+
+@keyframes fadeSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- ENCABEZADO --- */
+.encabezado {
+  background-color: #1e1e2f;
+  color: #00cfc8;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 8px #000;
+  animation: fadeSlideUp 0.7s ease;
+}
+
+.titulo {
+  font-weight: 700;
+  font-size: 1.8rem;
+  letter-spacing: 1px;
+  color: #00cfc8;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+/* Logo ejemplo para título */
+.titulo svg {
+  width: 28px;
+  height: 28px;
+  fill: #00cfc8;
+}
+
+
+/* Responsive Menu hamburguesa */
+@media (max-width: 768px) {
+
+
+/* --- CONTENIDO PRINCIPAL --- */
+.contenido-principal {
+  max-width: 960px;
+  margin: 3rem auto;
+  padding: 2rem 1.5rem;
+  background: #1e1e2fb7;
+  box-shadow: 0 8px 20px rgba(0, 207, 200, 0.418);
+  border-radius: 12px;
+  animation: fadeSlideUp 0.8s ease;
+  transition: box-shadow 0.4s ease, transform 0.4s ease;
+  color: #cceeee;
+}
+
+.contenido-principal:hover {
+  box-shadow: 0 0 22px rgba(0, 207, 200, 0.5);
+  transform: scale(1.01);
+}
+
+/* --- TABLA --- */
+table {
+  width: 100%;
+  max-width: 100%;
+  table-layout: fixed; /* Muy importante para que las celdas se ajusten */
+  word-wrap: break-word;
+  border-collapse: collapse;
+  font-size: 1rem;
+  color: #cceeee;
+  animation: fadeSlideUp 1s ease;
+}
+
+th, td {
+  padding: 0.8rem 1rem;
+  border: 1px solid #00cfc850;
+  text-align: center;
+  transition: background-color 0.5s ease, transform 0.5s ease;
+  vertical-align: middle;
+}
+
+th {
+  background-color: #00cfc8;
+  color: #121212;
+  font-weight: bold;
+  letter-spacing: 0.05em;
+  font-size: 2rem;
+}
+
+tr:nth-child(even) {
+  background-color: #27333f;
+}
+
+tr:hover {
+  background-color: #004d4a;
+  transform: scale(1.015);
+  cursor: default;
+  color: #a0f9f7;
+}
+
+/* Icono logo dentro de celda */
+td.icono-logo {
+  width: 36px;
+  padding: 0.4rem;
+}
+
+td.icono-logo img,
+td.icono-logo svg {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 1px #00cfc8aa);
+  transition: filter 0.4s ease;
+}
+
+tr:hover td.icono-logo img,
+tr:hover td.icono-logo svg {
+  filter: drop-shadow(0 0 4px #66f0eccc);
+}
+
+.puntos-header {
+  background-color: #0d8686 !important;
+  color: #000;
+}
+
+/* --- BOTONES --- */
+button, .btn {
+  background-color: #00cfc8;
+  color: #121212;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.5s ease, color 0.5s ease, transform 0.3s ease, box-shadow 0.4s ease;
+  box-shadow: 0 0 12px rgba(0, 207, 200, 0.3);
+}
+
+button:hover, .btn:hover {
+  background-color: #00bdb7;
+  color: #121212;
+  transform: scale(1.06);
+  box-shadow: 0 0 18px rgba(0, 207, 200, 0.5);
+}
+
+button:active, .btn:active {
+  transform: scale(0.97);
+  box-shadow: 0 0 8px rgba(0, 207, 200, 0.6);
+}
+
+
+/* --- ANIMACIONES EN CASCADA --- */
+.animate-delay-1 { animation-delay: 0.15s; }
+.animate-delay-2 { animation-delay: 0.3s; }
+.animate-delay-3 { animation-delay: 0.45s; }
+.animate-delay-4 { animation-delay: 0.6s; }
+.animate-delay-5 { animation-delay: 0.75s; }
+}
+
+
+.diferencia-positiva {
+  color: #00b894;
+  font-weight: 600;
+}
+
+.diferencia-negativa {
+  color: #d63031;
+  font-weight: 600;
+}
+
+/* Puntos destacados */
+.col-puntos {
+  background: #e0f38dc7;
+  color: #000000;
+  font-weight: bold;
+  border-radius: 5px;
+  padding: 0.25rem .65rem;
+  display: inline-block;
+}
+
+/* --- Efectos de Ranking --- */
+.fila-equipo.top-4 {
+  background: linear-gradient(90deg, #0011fd52 0%, rgba(227,250,252,0) 100%);
+}
+
+.fila-equipo.descenso {
+  background: linear-gradient(90deg, #f01d1d3b 0%, rgba(255,227,227,0) 100%);
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  table {
+    font-size: 0.85rem;
+    word-break: break-word;
+  }
+
+  th, td {
+    padding: 0.6rem 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .titulo {
+    font-size: 1.5rem;
+  }
+}
+
+/* --- Animaciones --- */
+@keyframes entradaFila {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fila-equipo {
+  animation: entradaFila 0.4s ease forwards;
+}
+
+#tabla-clasificacion {
+  width: 100%;
+  overflow-wrap: break-word;
+}

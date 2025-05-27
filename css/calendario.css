@@ -1,0 +1,260 @@
+:root {
+  --fondo: #121212;
+  --panel: rgba(30, 30, 30, 0.6);
+  --acento: #00e6d3;
+  --texto: #f5f5f5;
+  --muted: #aaa;
+  --borde: rgba(255, 255, 255, 0.08);
+  --blur: blur(12px);
+  --sombra: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+body {
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.calendario-container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 2rem 1rem;
+}
+
+.subtitulo-calendario {
+  text-align: center;
+  font-size: 2rem;
+  color: var(--acento);
+  margin-bottom: 2rem;
+  text-shadow: 0 0 5px rgba(0, 230, 118, 0.3);
+}
+
+.lista-jornadas {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.jornada-card {
+  backdrop-filter: var(--blur);
+  background: var(--panel);
+  border: 1px solid var(--borde);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: var(--sombra);
+}
+
+.jornada-card summary {
+  font-size: 1.3rem;
+  color: var(--acento);
+  font-weight: bold;
+  margin-bottom: 1rem;
+  cursor: pointer;
+}
+
+.partidos-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.partido-card {
+  background: rgba(35, 35, 35, 0.6);
+  border: 1px solid var(--borde);
+  border-radius: 12px;
+  backdrop-filter: var(--blur);
+  padding: 1rem;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+}
+
+.partido-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(0, 230, 118, 0.15);
+}
+
+.encabezado-partido {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.encabezado-partido h3 {
+  font-size: 1rem;
+  color: var(--acento);
+}
+
+.fecha-partido {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.vs {
+  color: var(--muted);
+  font-weight: bold;
+}
+
+.resultado-final {
+  margin-top: 0.5rem;
+  background: #1b1b1b;
+  border: 1px dashed var(--acento);
+  padding: 0.5rem;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.marcador-final {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.sets-detalle {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.btn-mostrar-editor {
+  margin-top: 0.8rem;
+  background: var(--acento);
+  color: black;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.3s ease;
+}
+
+.btn-mostrar-editor:hover {
+  background: #00c8b3;
+}
+
+.editor-partido {
+  display: none;
+  margin-top: 1rem;
+}
+
+.input-fecha {
+  width: 100%;
+  padding: 0.4rem;
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  background: #1c1c1c;
+  color: var(--texto);
+}
+
+.set {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.input-set {
+  width: 50px;
+  text-align: center;
+  padding: 0.4rem;
+  background: #1c1c1c;
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  color: var(--texto);
+}
+
+.btn-guardar {
+  margin-top: 1rem;
+  width: 100%;
+  background: var(--acento);
+  color: black;
+  padding: 0.6rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.3s ease;
+}
+
+.btn-guardar:hover {
+  background: #00c4a4;
+  transform: scale(1.02);
+}
+
+/* === MODAL === */
+.formulario-resultados {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(18, 18, 18, 0.92);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+}
+
+.tarjeta-formulario {
+  background: rgba(30, 30, 30, 0.95);
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 450px;
+  box-shadow: var(--sombra);
+}
+
+.tarjeta-formulario h3 {
+  color: var(--acento);
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.botones-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+}
+
+.boton-guardar, .boton-cancelar {
+  flex: 1;
+  margin: 0 0.5rem;
+  padding: 0.6rem;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  transition: background 0.3s ease;
+}
+
+.boton-guardar {
+  background: var(--acento);
+  color: black;
+}
+
+.boton-cancelar {
+  background: #444;
+  color: white;
+}
+
+.boton-guardar:hover {
+  background: #00ccaa;
+}
+
+.boton-cancelar:hover {
+  background: #666;
+}
+
+@media (max-width: 600px) {
+  .partidos-container {
+    grid-template-columns: 1fr;
+  }
+
+  .encabezado-partido h3 {
+    font-size: 0.95rem;
+  }
+
+  .fecha-partido {
+    font-size: 0.8rem;
+  }
+}

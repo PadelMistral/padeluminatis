@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Calendario - Liga de Pádel</title>
+  <link rel="stylesheet" href="./css/estilo.css" />
+  <link rel="stylesheet" href="./css/perfil.css".css">
+  <link rel="shortcut icon" href="./imagenes/Logojafs.png" type="image/x-icon">
+</head>
+<body class="pagina-principal">
+  <header class="encabezado">
+               <div class="logo">
+            <img src="./imagenes/Logojafs.png" alt="Logo de JafsPadel League" width="100" height="100">
+        </div>
+    <h1 class="titulo"> Mi Perfil</h1>
+    <button class="menu-hamburguesa" 
+            aria-label="Menú principal"
+            aria-expanded="false"
+            aria-controls="menu-navegacion">
+      <span class="linea-hamburguesa"></span>
+      <span class="linea-hamburguesa"></span>
+      <span class="linea-hamburguesa"></span>
+    </button>
+    <nav class="menu-navegacion">
+      <ul>
+        <li><a href="./home.html">Inicio</a></li>
+        <li><a href="./calendario.html">Calendario</a></li>
+        <li><a href="./clasificacion.html">Clasificación</a></li>
+        <li><a href="./chat.html">Chat</a></li>
+        <li><a href="./normas.html">Normas</a></li>
+        <li><a href="./perfil.html">Perfil</a></li>
+        <li><a id="link-admin" href="./admin.html" style="display: none;">Admin</a></li>
+        <li><a href="./index.html">Cerrar sesión</a></li>
+      </ul>
+    </nav>
+  </header>
+
+
+
+  <!-- Estadísticas del jugador -->
+  <section>
+    <h2>Estadísticas</h2>
+    <div id="estadisticas">
+      <p>Cargando estadísticas...</p>
+    </div>
+
+    <h3>Partidos jugados</h3>
+    <ul id="lista-partidos">
+      <li>Cargando partidos...</li>
+    </ul>
+  </section>
+
+  <!-- Formulario para crear un nuevo partido -->
+  <section>
+    <h2>Crear nuevo partido</h2>
+    <form id="crear-partido">
+      <label for="select-rival">Selecciona un equipo rival</label>
+      <select id="select-rival" required>
+        <option value="">Cargando rivales...</option>
+      </select>
+
+      <label for="fecha-partido">Fecha del partido</label>
+      <input type="date" id="fecha-partido" required>
+
+      <label for="hora-partido">Hora del partido</label>
+      <input type="time" id="hora-partido" required>
+
+      <button type="submit">Crear partido</button>
+    </form>
+  </section>
+
+  <!-- Lista de próximos partidos -->
+  <section>
+    <h2>Próximos partidos</h2>
+    <ul id="proximos-partidos">
+      <li>Cargando próximos partidos...</li>
+    </ul>
+  </section>
+  
+  <script type="module" src="./js/perfil.js"></script>
+  <script src="./js/menu-hamburguesa.js"></script>
+</body>
+</html>

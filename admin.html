@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./css/estilo.css" >
+  <link rel="stylesheet" href="./css/admin.css" >
+  <link rel="shortcut icon" href="./imagenes/Logojafs.png" type="image/x-icon">
+  <title>Panel de Administración</title>
+</head>
+<body>
+  <header class="encabezado">
+               <div class="logo">
+            <img src="./imagenes/Logojafs.png" alt="Logo de JafsPadel League" width="100" height="100">
+        </div>
+    <h1 class="titulo">Panel Admin</h1>
+
+    <button class="menu-hamburguesa" 
+            aria-label="Menú principal"
+            aria-expanded="false"
+            aria-controls="menu-navegacion">
+        <span class="linea-hamburguesa"></span>
+        <span class="linea-hamburguesa"></span>
+        <span class="linea-hamburguesa"></span>
+    </button>
+
+    <nav class="menu-navegacion">
+      <ul>
+        <li><a href="./home.html">Inicio</a></li>
+        <li><a href="./calendario.html">Calendario</a></li>
+        <li><a href="./clasificacion.html">Clasificación</a></li>
+        <li><a href="./chat.html">Chat</a></li>
+        <li><a href="./normas.html">Normas</a></li>
+        <li><a href="./perfil.html">Perfil</a></li>
+        <li><a id="link-admin" href="./admin.html" style="display: none;">Admin</a></li>
+        <li><a href="./index.html">Cerrar sesión</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="contenedor-principal">
+    <!-- Sección de Aprobación de Usuarios -->
+    <section class="seccion-admin">
+      <h2>Gestión de Usuarios</h2>
+      <div class="tarjeta">
+        <h3>Usuarios Pendientes de Aprobación</h3>
+        <ul id="lista-usuarios" class="lista-usuarios"></ul>
+      </div>
+    </section>
+
+    <!-- Sección de Creación de Equipos -->
+    <section class="seccion-admin">
+      <h2>Gestión de Equipos</h2>
+      <div class="tarjeta">
+        <h3>Crear Nuevo Equipo</h3>
+        <div class="form-equipo">
+          <select id="select-jugador1" class="select-jugador">
+            <option value="">Selecciona jugador 1</option>
+          </select>
+          <span class="vs">y</span>
+          <select id="select-jugador2" class="select-jugador">
+            <option value="">Selecciona jugador 2</option>
+          </select>
+          <button id="btn-crear-equipo" class="boton-accion">
+            Crear Equipo
+          </button>
+        </div>
+        
+        <h3>Equipos Existentes</h3>
+        <ul id="lista-equipos-admin" class="lista-equipos"></ul>
+      </div>
+    </section>
+
+    <!-- Sección de Creación de Calendario -->
+    <section class="seccion-admin">
+      <h2>Gestión de Calendario</h2>
+      <div class="tarjeta">
+        <h3>Crear Nueva Jornada</h3>
+        <div class="form-jornada">
+          <input type="text" 
+                 id="nombre-jornada" 
+                 class="input-text"
+                 placeholder="Nombre de la jornada (Ej: Jornada 1 - Octubre)">
+          
+          <div id="partidos-jornada" class="contenedor-partidos">
+            <!-- Partidos se añadirán aquí dinámicamente -->
+          </div>
+          
+          <div class="controles-jornada">
+            <button id="btn-anadir-partido" class="boton-accion secundario">
+              ＋ Añadir Partido
+            </button>
+            <button id="btn-crear-jornada" class="boton-accion">
+              🗓️ Crear Jornada
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+      <div class="seccion-admin">
+    <h2>Partidos Jugados</h2>
+    <div id="partidos-jugados" class="lista-partidos-admin"></div>
+  </div>
+</div>
+<div class="partidos-pendientes"></div>
+  </main>
+
+  <script type="module" src="./js/menu-hamburguesa.js"></script>
+  <script type="module" src="./js/admin.js"></script>
+</body>
+</html>

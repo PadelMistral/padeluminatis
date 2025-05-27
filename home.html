@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inicio - Liga de Pádel</title>
+  <link rel="stylesheet" href="./css/estilo.css">
+  <link rel="stylesheet" href="./css/home.css">
+  <link rel="shortcut icon" href="./imagenes/Logojafs.png" type="image/x-icon">
+</head>
+<body class="pagina-principal">
+  <header class="encabezado">
+                   <div class="logo">
+            <img src="./imagenes/Logojafs.png" alt="Logo de JafsPadel League" width="100" height="100">
+        </div>
+    <h1 class="titulo">Liga de Pádel</h1>
+
+<button class="menu-hamburguesa" 
+        aria-label="Menú principal"
+        aria-expanded="false"
+        aria-controls="menu-navegacion">
+    <span class="linea-hamburguesa"></span>
+    <span class="linea-hamburguesa"></span>
+    <span class="linea-hamburguesa"></span>
+</button>
+
+    <nav class="menu-navegacion">
+      <ul>
+        <li><a href="./home.html">Inicio</a></li>
+        <li><a href="./calendario.html">Calendario</a></li>
+        <li><a href="./clasificacion.html">Clasificación</a></li>
+        <li><a href="./chat.html">Chat</a></li>
+        <li><a href="./normas.html">Normas</a></li>
+        <li><a href="./perfil.html">Perfil</a></li>
+        <li><a id="link-admin" href="./admin.html" style="display: none;">Admin</a></li>
+        <li><a href="./index.html">Cerrar sesión</a></li>
+      </ul>
+    </nav>
+  </header>
+
+
+  <div id="mensaje-bienvenida" class="mensaje-bienvenida">
+    ¡Bienvenido a la mejor comunidad de Pádel, <span id="nombre-usuario"></span>!
+  </div>
+
+  <main id="contenido-principal" class="contenido-principal">
+     <section class="seccion-destacados">
+      <div class="proximo-partido card-destacada">
+        <h2>Próximo Partido</h2>
+        <div class="info-partido">
+          <div class="equipos">
+            <span class="equipo-local">Cargando...</span>
+            <span class="vs">VS</span>
+            <span class="equipo-visitante">Cargando...</span>
+          </div>
+          <div class="detalles-partido">
+            <p class="fecha">-</p>
+            
+          </div>
+        </div>
+      </div>
+      </section>
+      <hr>
+
+      <section class="seccion-destacados">
+      <div class="partidos-pendientes card-destacada">
+        <h2>Partidos Pendientes</h2>
+        <ul class="lista-partidos"></ul>
+      </div>
+    </section>
+    <hr>
+
+            <section class="seccion-tarjetas">
+
+            <h2>Compite y observa tus resultados</h2>
+
+            <div class="tarjetas">
+
+                <div class="tarjeta">
+                    <img src="./imagenes/158877-1920x1200-desktop-hd-tennis-wallpaper-image.jpg" alt="Torneos de pádel" width="400" height="400">
+                    <div class="contenido-tarjeta">
+                        <h3>Clasificación</h3>
+                        <p>Obseva los mejores equipos, puntos, victorias y derrotas, todo desde la clasificación</p><br><br>
+                        <a href="./clasificacion.html" class="boton-cta">Ir a clasificación</a>
+                        <div></div><br>
+                        <img src="./imagenes/chevron-down-svgrepo-com.svg" alt="flecha">
+                    </div>
+                </div>
+
+                <div class="tarjeta">
+                    <img src="./imagenes/5c0e4dc8-3bc6-4692-9e73-47d471dcd846.webp" alt="Ranking de jugadores" width="400" height="400">
+                    <div class="contenido-tarjeta">
+                        <h3>Estadisticas</h3>
+                        <p>Observa tus estadisticas, crea partidos contra tus rivales y mucho más</p><br><br>
+                        <a href="./perfil.html" class="boton-cta">Ir a Mi Perfil</a>
+                        <div></div>
+                        <img src="./imagenes/chevron-down-svgrepo-com.svg" alt="flecha">
+                    </div>
+                </div>
+
+                <div class="tarjeta">
+                    <img src="./imagenes/Screenshot_20210512-180610_YouTube.jpg" alt="Comunidad de jugadores" width="400" height="400">
+                    <div class="contenido-tarjeta" >
+                        <h3>Habla con la Comunidad</h3>
+                        <p>Puedes caldear el ambiente antes de un partido o dejar cometarios respecto a dudas o situaciones de partido</p>
+                        <br><br>
+                        <a href="./chat.html" class="boton-cta">Ir al Chat</a>
+                        <div></div>
+                        <img src="./imagenes/chevron-down-svgrepo-com.svg" alt="flecha">
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+  </main>
+  <script src="./js/menu-hamburguesa.js"></script>
+  <script type="module" src="./js/enlaceAdmin.js"></script>
+
+  <script>
+    // Mostrar mensaje 2 segundos, luego ocultar mensaje y mostrar contenido
+    window.onload = () => {
+      setTimeout(() => {
+        document.getElementById('mensaje-bienvenida').style.display = 'none';
+        document.getElementById('contenido-principal').style.display = 'block';
+      }, 2000);
+    }
+  </script>
+
+<script type="module">
+  import { db, auth } from './js/firebase-config.js';
+  import {
+    collection,
+    getDocs,
+    doc,
+    getDoc,
+    query,
+    collectionGroup
+  } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
+
+  async function cargarPartidosPendientes() {
+    const ahora = new Date();
+    const pendientes = [];
+
+    const snapshot = await getDocs(collection(db, "calendario"));
+
+    for (const jornadaDoc of snapshot.docs) {
+      const partidosSnap = await getDocs(collection(db, `calendario/${jornadaDoc.id}/partidos`));
+
+      partidosSnap.forEach(partidoDoc => {
+        const data = partidoDoc.data();
+        const fecha = data.fecha?.toDate?.();
+
+        // Solo incluir partidos pendientes con fecha futura
+        if (!data.resultado && fecha && fecha > ahora) {
+          pendientes.push({
+            id: partidoDoc.id,
+            jornadaId: jornadaDoc.id,
+            ...data,
+            fecha
+          });
+        }
+      });
+    }
+
+    // Ordenar por fecha más próxima
+    pendientes.sort((a, b) => a.fecha - b.fecha);
+
+    // Obtener nombres de equipos
+    const partidosConNombres = await Promise.all(pendientes.map(async partido => {
+      const [localSnap, visitanteSnap] = await Promise.all([
+        getDoc(doc(db, "equipos", partido.equipoLocal)),
+        getDoc(doc(db, "equipos", partido.equipoVisitante))
+      ]);
+
+      return {
+        ...partido,
+        localNombre: localSnap.data()?.nombre || 'Equipo desconocido',
+        visitanteNombre: visitanteSnap.data()?.nombre || 'Equipo desconocido'
+      };
+    }));
+
+    actualizarUI(partidosConNombres);
+  }
+
+  function actualizarUI(partidos) {
+    const listaPartidos = document.querySelector('.lista-partidos');
+    listaPartidos.innerHTML = '';
+
+    if (partidos.length === 0) {
+      listaPartidos.innerHTML = '<p class="sin-partidos">No hay partidos programados</p>';
+      return;
+    }
+
+    // Mostrar el próximo partido
+    const proximo = partidos[0];
+    document.querySelector('.equipo-local').textContent = proximo.localNombre;
+    document.querySelector('.equipo-visitante').textContent = proximo.visitanteNombre;
+    document.querySelector('.fecha').textContent = proximo.fecha.toLocaleDateString('es-ES', {
+      weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit'
+    });
+
+    // Mostrar el resto de partidos
+    partidos.slice(1).forEach(partido => {
+      const li = document.createElement('li');
+      li.className = 'partido-item';
+      li.innerHTML = `
+        <span class="equipos">${partido.localNombre} vs ${partido.visitanteNombre}</span>
+        <span class="fecha">${partido.fecha.toLocaleDateString('es-ES', {
+          day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit'
+        })}</span>
+      `;
+      listaPartidos.appendChild(li);
+    });
+  }
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      cargarPartidosPendientes();
+
+      // Cargar nombre del usuario (opcional)
+      getDoc(doc(db, 'usuarios', user.uid)).then(docSnap => {
+        if (docSnap.exists()) {
+          const nombre = docSnap.data().nombreUsuario;
+          document.querySelector('.contenido-bienvenida h1').innerHTML += 
+            `, <span class="nombre-usuario">${nombre}</span>`;
+        }
+      });
+    }
+  });
+</script>
+
+</body>
+</html>

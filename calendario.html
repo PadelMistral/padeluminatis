@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Calendario - Liga de Pádel</title>
+  <link rel="stylesheet" href="./css/calendario.css">
+  <link rel="stylesheet" href="./css/estilo.css" />
+  <link rel="shortcut icon" href="./imagenes/Logojafs.png" type="image/x-icon">
+</head>
+<body class="pagina-principal">
+  <header class="encabezado">
+               <div class="logo">
+            <img src="./imagenes/Logojafs.png" alt="Logo de JafsPadel League" width="100" height="100">
+        </div>
+    <h1 class="titulo">Calendario de Partidos</h1>
+    <button class="menu-hamburguesa" 
+            aria-label="Menú principal"
+            aria-expanded="false"
+            aria-controls="menu-navegacion">
+      <span class="linea-hamburguesa"></span>
+      <span class="linea-hamburguesa"></span>
+      <span class="linea-hamburguesa"></span>
+    </button>
+    <nav class="menu-navegacion">
+      <ul>
+        <li><a href="./home.html">Inicio</a></li>
+        <li><a href="./calendario.html">Calendario</a></li>
+        <li><a href="./clasificacion.html">Clasificación</a></li>
+        <li><a href="./chat.html">Chat</a></li>
+        <li><a href="./normas.html">Normas</a></li>
+        <li><a href="./perfil.html">Perfil</a></li>
+        <li><a id="link-admin" href="./admin.html" style="display: none;">Admin</a></li>
+        <li><a href="./index.html">Cerrar sesión</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="contenido-principal">
+    <!-- Contenedor principal de calendario -->
+    <section class="calendario-container">
+      <h2 class="subtitulo-calendario">Próximos Encuentros</h2>
+      
+      <!-- Listado de jornadas -->
+      <div id="lista-jornadas" class="lista-jornadas">
+        <!-- Las jornadas se cargarán dinámicamente aquí -->
+      </div>
+
+      <!-- Formulario de resultados (oculto por defecto) -->
+      <div id="formulario-resultados" class="formulario-resultados" style="display: none;">
+        <div class="tarjeta-formulario">
+          <h3>Registrar Resultados</h3>
+          <form id="form-resultado" class="formulario-resultado">
+            <div class="grupo-formulario">
+              <label>Fecha del partido:</label>
+              <input type="date" id="fecha-partido" class="input-fecha" required>
+            </div>
+            
+            <div class="sets-container">
+              <div class="set-item">
+                <h4>Set 1</h4>
+                <div class="puntos-container">
+                  <input type="number" id="set1-equipo1" class="input-puntos" min="0" placeholder="0">
+                  <span class="separador">-</span>
+                  <input type="number" id="set1-equipo2" class="input-puntos" min="0" placeholder="0">
+                </div>
+              </div>
+              
+              <!-- Repetir para Sets 2 y 3 -->
+            </div>
+
+            <input type="hidden" id="jornada-id">
+            <input type="hidden" id="partido-id">
+
+            <div class="botones-container">
+              <button type="submit" class="boton-guardar">Guardar Resultado</button>
+              <button type="button" class="boton-cancelar" onclick="ocultarFormulario()">Cancelar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Scripts -->
+<script type="module" src="./js/calendario.js"></script>
+  <script src="./js/menu-hamburguesa.js"></script>
+  
+  <script type="module" src="./js/enlaceAdmin.js"></script>
+  
+</body>
+</html>
