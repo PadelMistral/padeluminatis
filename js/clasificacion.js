@@ -6,7 +6,7 @@ import {
 
 const tablaClasificacion = document.getElementById("tabla-clasificacion");
 
-// 1. Obtener mapa de equipos con inicialización de campos
+// 1. Obtener mapa de equipos con inicialización de campos (añadimos PG y PP)
 async function obtenerEquiposMap() {
   const equiposSnap = await getDocs(collection(db, "equipos"));
   const map = {};
@@ -16,6 +16,8 @@ async function obtenerEquiposMap() {
       nombre: docu.data().nombre,
       puntos: 0,
       partidosJugados: 0,
+      partidosGanados: 0,  // Nuevo campo
+      partidosPerdidos: 0, // Nuevo campo
       setsGanados: 0,
       setsPerdidos: 0,
       juegosGanados: 0,
@@ -25,7 +27,7 @@ async function obtenerEquiposMap() {
   return map;
 }
 
-// 2. Calcular clasificación a partir del calendario y resultados
+// 2. Calcular clasificación (añadimos conteo de PG y PP)
 async function calcularClasificacion(equiposMap) {
   const calendarioSnap = await getDocs(collection(db, "calendario"));
   
@@ -70,21 +72,26 @@ async function calcularClasificacion(equiposMap) {
       visitante.juegosGanados += juegosVisitante;
       visitante.juegosPerdidos += juegosLocal;
 
-      // Asignar puntos
+      // Asignar puntos y contar PG/PP
       if (setsLocal > setsVisitante) {
         local.puntos += 2;
+        local.partidosGanados++;  // Local gana
         visitante.puntos += 1;
+        visitante.partidosPerdidos++; // Visitante pierde
       } else if (setsVisitante > setsLocal) {
         visitante.puntos += 2;
+        visitante.partidosGanados++;  // Visitante gana
         local.puntos += 1;
+        local.partidosPerdidos++; // Local pierde
       } else {
         local.puntos += 1;
         visitante.puntos += 1;
+        // En empate no se cuenta como ganado ni perdido
       }
     }
   }
 
-  // Ordenar clasificación
+  // Ordenar clasificación (mismo criterio)
   return Object.values(equiposMap).sort((a, b) => {
     if (b.puntos !== a.puntos) return b.puntos - a.puntos;
     const diffSetsA = a.setsGanados - a.setsPerdidos;
@@ -96,7 +103,7 @@ async function calcularClasificacion(equiposMap) {
   });
 }
 
-// 3. Guardar clasificación en Firestore
+// 3. Guardar clasificación en Firestore (añadimos PG y PP)
 async function guardarClasificacion(clasificacion) {
   const batch = writeBatch(db);
   const clasificacionRef = collection(db, "clasificacion");
@@ -112,6 +119,8 @@ async function guardarClasificacion(clasificacion) {
       posicion: index + 1,
       nombre: equipo.nombre,
       partidosJugados: equipo.partidosJugados,
+      partidosGanados: equipo.partidosGanados,  // Nuevo campo
+      partidosPerdidos: equipo.partidosPerdidos, // Nuevo campo
       puntos: equipo.puntos,
       setsGanados: equipo.setsGanados,
       setsPerdidos: equipo.setsPerdidos,
@@ -124,18 +133,17 @@ async function guardarClasificacion(clasificacion) {
   await batch.commit();
 }
 
-// 4. Mostrar la clasificación en la tabla HTML
+// 4. Mostrar la clasificación en la tabla HTML (versión modificada)
 function mostrarClasificacion(clasificacion) {
   tablaClasificacion.innerHTML = `
     <thead>
       <tr>
-        <th>#</th>
+        <th>Pos</th>
         <th>Equipo</th>
         <th>PJ</th>
-        <th>Sets</th>
-        <th>Juegos</th>
+        <th>PG / PP</th>
         <th>Dif.</th>
-        <th>Puntos</th>
+        <th style="text-align: center;">Puntos</th>
       </tr>
     </thead>
     <tbody>
@@ -143,12 +151,14 @@ function mostrarClasificacion(clasificacion) {
         <tr class="fila-equipo
           ${index < 3 ? 'top-4' : ''}
           ${index >= clasificacion.length - 2 ? 'descenso' : ''}">
-          <td class="col-posicion">${index + 1}</td>
-          <td><div class="nombre-equipo">${eq.nombre}</div></td>
-          <td class="col-estadistica">${eq.partidosJugados}</td>
-          <td class="col-estadistica">${eq.setsGanados}/${eq.setsPerdidos}</td>
-          <td class="col-estadistica">${eq.juegosGanados}/${eq.juegosPerdidos}</td>
-          <td class="${(eq.juegosGanados - eq.juegosPerdidos) >= 0 ? 'diferencia-positiva' : 'diferencia-negativa'}">
+          <td style="text-align: center;">${index + 1}</td>
+          <td>${eq.nombre}</td>
+          <td style="text-align: center;">${eq.partidosJugados}</td>
+          <td style="text-align: center;">
+            <span style="color: green; font-weight: bold;">${eq.partidosGanados}</span> / 
+            <span style="color: red; font-weight: bold;">${eq.partidosPerdidos}</span>
+          </td>
+          <td style="${(eq.juegosGanados - eq.juegosPerdidos) >= 0 ? 'color: green;' : 'color: red;'} text-align: center;">
             ${eq.juegosGanados - eq.juegosPerdidos}
           </td>
           <td><span class="col-puntos">${eq.puntos}</span></td>
