@@ -1,0 +1,2166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#667eea">
+    <title>Simulador Visual Real - Ranking Pádel</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            color: #fff;
+            padding: 20px;
+            min-height: 100vh;
+            margin: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            overflow: hidden;
+            padding-top: 20px;
+        }
+        
+        .page-header {
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 30px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+        
+        .page-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .page-header .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+            max-width: 100%;
+            overflow: hidden;
+        }
+        
+        .panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            max-width: 100%;
+            overflow: hidden;
+        }
+        
+        .panel-title {
+            font-size: 1.5rem;
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #ffcc00;
+            display: flex;
+            align-items: center;
+        }
+        
+        .panel-title i {
+            margin-right: 10px;
+        }
+        
+        .tabla-responsive-wrapper {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            border-radius: 10px;
+            background: rgba(18, 20, 25, 0.95);
+            max-width: 100%;
+            width: 100%;
+            padding-bottom: 1px;
+        }
+        
+        .ranking-table {
+            min-width: 600px;
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            table-layout: fixed;
+        }
+        
+        .ranking-table th {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.8rem 0.4rem;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+        
+        /* Ajustar anchos de columnas específicos - prioridad a los puntos */
+        .ranking-table th:nth-child(1), .ranking-table td:nth-child(1) { width: 8%; } /* Pos */
+        .ranking-table th:nth-child(2), .ranking-table td:nth-child(2) { width: 20%; } /* Nombre */
+        .ranking-table th:nth-child(3), .ranking-table td:nth-child(3) { width: 10%; } /* Nivel */
+        .ranking-table th:nth-child(4), .ranking-table td:nth-child(4) { width: 10%; } /* Partidos */
+        .ranking-table th:nth-child(5), .ranking-table td:nth-child(5) { width: 10%; } /* Victorias */
+        .ranking-table th:nth-child(6), .ranking-table td:nth-child(6) { width: 12%; } /* Sets */
+        .ranking-table th:nth-child(7), .ranking-table td:nth-child(7) { width: 20%; } /* Puntos - más espacio */
+        
+        .ranking-table td {
+            padding: 0.6rem 0.4rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            height: auto;
+            vertical-align: middle;
+            text-align: center;
+        }
+        
+        .ranking-table td:nth-child(2) {
+            text-align: left;
+            padding-left: 0.8rem;
+        }
+        
+        .ranking-table td:last-child {
+            padding: 0.6rem 0.8rem;
+            text-align: center;
+            font-weight: bold;
+            min-width: 100px;
+            max-width: none;
+            overflow: visible;
+        }
+        
+        .ranking-table tr {
+            height: auto;
+            transition: all 0.3s ease;
+        }
+        
+        .ranking-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .ranking-table tr:hover td {
+            color: #ffffff;
+        }
+        
+        .ranking-table td:first-child {
+            border-top-left-radius: 6px;
+            border-bottom-left-radius: 6px;
+            font-weight: 700;
+            color: #E9C46A;
+            text-align: center;
+            min-width: 40px;
+            background: rgba(233, 196, 106, 0.1);
+        }
+        
+        .ranking-table td:last-child {
+            border-top-right-radius: 6px;
+            border-bottom-right-radius: 6px;
+            background: linear-gradient(135deg, rgba(191, 161, 58, 0.2), rgba(255, 215, 0, 0.1));
+            color: #FFD700;
+            font-weight: 700;
+            font-size: 1rem;
+            text-align: center;
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            min-width: 40px;
+            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);
+        }
+        
+        .ranking-table td:last-child::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent);
+            animation: shine 3s infinite;
+        }
+        
+        @keyframes shine {
+            0% { left: -100%; }
+            50% { left: 100%; }
+            100% { left: 100%; }
+        }
+        
+        /* Estilos para posiciones especiales */
+        .ranking-table tr:nth-child(1) {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(191, 161, 58, 0.1));
+            border-left: 4px solid #FFD700;
+        }
+        
+        .ranking-table tr:nth-child(2) {
+            background: linear-gradient(135deg, rgba(192, 192, 192, 0.15), rgba(169, 169, 169, 0.1));
+            border-left: 4px solid #C0C0C0;
+        }
+        
+        .ranking-table tr:nth-child(3) {
+            background: linear-gradient(135deg, rgba(205, 127, 50, 0.15), rgba(184, 115, 51, 0.1));
+            border-left: 4px solid #CD7F32;
+        }
+        
+        .ranking-table tr:nth-child(4) {
+            background: linear-gradient(135deg, rgba(191, 161, 58, 0.1), rgba(169, 143, 51, 0.05));
+            border-left: 4px solid #BFA13A;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .ranking-table th, .ranking-table td {
+                padding: 0.32rem 0.09rem;
+                font-size: 0.89rem;
+            }
+            .ranking-table td:nth-child(2) {
+                padding-left: 0.4em;
+            }
+        }
+        
+        .ranking-table th:nth-child(1), .ranking-table td:nth-child(1) { width: 8%; } /* Pos */
+        .ranking-table th:nth-child(2), .ranking-table td:nth-child(2) { width: 25%; } /* Nombre */
+        .ranking-table th:nth-child(3), .ranking-table td:nth-child(3) { width: 8%; } /* Nivel */
+        .ranking-table th:nth-child(4), .ranking-table td:nth-child(4) { width: 12%; } /* Partidos */
+        .ranking-table th:nth-child(5), .ranking-table td:nth-child(5) { width: 12%; } /* Victorias */
+        .ranking-table th:nth-child(6), .ranking-table td:nth-child(6) { width: 15%; } /* Sets */
+        .ranking-table th:nth-child(7), .ranking-table td:nth-child(7) { width: 10%; } /* Dificultad */
+        .ranking-table th:nth-child(8), .ranking-table td:nth-child(8) { width: 10%; } /* Puntos */
+        
+        .ranking-table td {
+            padding: 8px 4px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.7rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            height: 50px;
+            vertical-align: middle;
+        }
+        
+        .ranking-table tr {
+            height: 50px;
+            transition: all 0.3s ease;
+        }
+        
+        .ranking-table tr:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        /* Fila del usuario logueado */
+        .ranking-table tr.current-user {
+            background: linear-gradient(135deg, rgba(241, 196, 15, 0.3), rgba(243, 156, 18, 0.2)) !important;
+            border-left: 4px solid #f1c40f;
+            box-shadow: 0 2px 8px rgba(241, 196, 15, 0.4);
+        }
+        
+        .ranking-table tr.current-user:hover {
+            background: linear-gradient(135deg, rgba(241, 196, 15, 0.4), rgba(243, 156, 18, 0.3)) !important;
+        }
+        
+        .ranking-table tr.current-user td {
+            font-weight: bold;
+        }
+        
+        /* Top 10 con efectos especiales */
+        .ranking-table tr:nth-child(1) {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 204, 0, 0.1));
+            border-left: 4px solid #ffd700;
+            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+        }
+        
+        .ranking-table tr:nth-child(2) {
+            background: linear-gradient(135deg, rgba(192, 192, 192, 0.2), rgba(169, 169, 169, 0.1));
+            border-left: 4px solid #c0c0c0;
+            box-shadow: 0 2px 8px rgba(192, 192, 192, 0.3);
+        }
+        
+        .ranking-table tr:nth-child(3) {
+            background: linear-gradient(135deg, rgba(205, 127, 50, 0.2), rgba(184, 115, 51, 0.1));
+            border-left: 4px solid #cd7f32;
+            box-shadow: 0 2px 8px rgba(205, 127, 50, 0.3);
+        }
+        
+        .ranking-table tr:nth-child(4) {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.15), rgba(52, 152, 219, 0.1));
+            border-left: 3px solid #3498db;
+        }
+        
+        .ranking-table tr:nth-child(5) {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.12), rgba(52, 152, 219, 0.08));
+            border-left: 3px solid #3498db;
+        }
+        
+        .ranking-table tr:nth-child(6) {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.10), rgba(52, 152, 219, 0.06));
+            border-left: 3px solid #3498db;
+        }
+        
+        .ranking-table tr:nth-child(7) {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.08), rgba(52, 152, 219, 0.04));
+            border-left: 3px solid #3498db;
+        }
+        
+        .ranking-table tr:nth-child(8) {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.06), rgba(52, 152, 219, 0.03));
+            border-left: 3px solid #3498db;
+        }
+        
+        .ranking-table tr:nth-child(9) {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.04), rgba(52, 152, 219, 0.02));
+            border-left: 3px solid #3498db;
+        }
+        
+        .ranking-table tr:nth-child(10) {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.02), rgba(52, 152, 219, 0.01));
+            border-left: 3px solid #3498db;
+        }
+        
+        .elo-change {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        
+        .elo-up {
+            background: rgba(46, 204, 113, 0.3);
+            color: #2ecc71;
+        }
+        
+        .elo-down {
+            background: rgba(231, 76, 60, 0.3);
+            color: #e74c3c;
+        }
+        
+        .position-change {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-left: 4px;
+        }
+        
+        .position-up {
+            background: rgba(46, 204, 113, 0.3);
+            color: #2ecc71;
+        }
+        
+        .position-down {
+            background: rgba(231, 76, 60, 0.3);
+            color: #e74c3c;
+        }
+        
+        .position-same {
+            background: rgba(149, 165, 166, 0.3);
+            color: #95a5a6;
+        }
+        
+        /* Estilos para las raquetas de colores */
+        .raqueta-indicator {
+            display: inline-block;
+            font-size: 1.2rem;
+            margin-left: 8px;
+            animation: raquetaBrillo 2s infinite;
+        }
+
+        @keyframes raquetaBrillo {
+            0%, 100% { 
+                filter: brightness(1) drop-shadow(0 0 2px currentColor);
+            }
+            50% { 
+                filter: brightness(1.3) drop-shadow(0 0 8px currentColor);
+            }
+        }
+
+        .raqueta-oro { color: #ffd700; }
+        .raqueta-plata { color: #c0c0c0; }
+        .raqueta-bronce { color: #cd7f32; }
+        .raqueta-azul { color: #3498db; }
+        .raqueta-gris { color: #95a5a6; }
+        .raqueta-purple { color: #9b59b6; }
+        .raqueta-green { color: #2ecc71; }
+        .raqueta-orange { color: #e67e22; }
+        .raqueta-red { color: #e74c3c; }
+        .raqueta-pink { color: #e91e63; }
+
+        /* Estilos responsive */
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .panel {
+                padding: 10px;
+            }
+            
+            .ranking-table {
+                min-width: 500px;
+                font-size: 0.55rem;
+            }
+            
+            .ranking-table th,
+            .ranking-table td {
+                padding: 4px 2px;
+                font-size: 0.55rem;
+            }
+            
+            .page-header h1 {
+                font-size: 2rem;
+            }
+            
+            .page-header .subtitle {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+            }
+            
+            .container {
+                padding-top: 5px;
+            }
+            
+            .panel {
+                padding: 8px;
+            }
+            
+            .ranking-table {
+                min-width: 400px;
+                font-size: 0.5rem;
+            }
+            
+            .ranking-table th,
+            .ranking-table td {
+                padding: 3px 1px;
+                font-size: 0.5rem;
+            }
+        }
+
+        /* Animación de brillo para puntos Elo */
+        .puntos-elo {
+            animation: puntosBrillo 3s infinite;
+            font-size: 0.95rem !important;
+        }
+
+        @keyframes puntosBrillo {
+            0%, 100% { 
+                text-shadow: 0 0 2px currentColor;
+            }
+            50% { 
+                text-shadow: 0 0 8px currentColor, 0 0 12px currentColor;
+            }
+        }
+
+        /* Colores degradados para posiciones 11-20 */
+        .ranking-table tr:nth-child(11) {
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.15), rgba(231, 76, 60, 0.1));
+            border-left: 3px solid #e74c3c;
+        }
+        
+        .ranking-table tr:nth-child(12) {
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.12), rgba(231, 76, 60, 0.08));
+            border-left: 3px solid #e74c3c;
+        }
+        
+        .ranking-table tr:nth-child(13) {
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.10), rgba(231, 76, 60, 0.06));
+            border-left: 3px solid #e74c3c;
+        }
+        
+        .ranking-table tr:nth-child(14) {
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.08), rgba(231, 76, 60, 0.04));
+            border-left: 3px solid #e74c3c;
+        }
+        
+        .ranking-table tr:nth-child(15) {
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.06), rgba(231, 76, 60, 0.03));
+            border-left: 3px solid #e74c3c;
+        }
+        
+        .ranking-table tr:nth-child(16) {
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.04), rgba(231, 76, 60, 0.02));
+            border-left: 3px solid #e74c3c;
+        }
+        
+        .ranking-table tr:nth-child(17) {
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.02), rgba(231, 76, 60, 0.01));
+            border-left: 3px solid #e74c3c;
+        }
+        
+        .ranking-table tr:nth-child(18) {
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.01), rgba(231, 76, 60, 0.005));
+            border-left: 3px solid #e74c3c;
+        }
+        
+        .ranking-table tr:nth-child(19) {
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.005), rgba(231, 76, 60, 0.002));
+            border-left: 3px solid #e74c3c;
+        }
+        
+        .ranking-table tr:nth-child(20) {
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.002), rgba(231, 76, 60, 0.001));
+            border-left: 3px solid #e74c3c;
+        }
+        
+        .match-result {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+        
+        .teams {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 25px 0;
+        }
+        
+        .team {
+            text-align: center;
+            padding: 20px;
+            border-radius: 12px;
+            width: 45%;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .team.winner {
+            background: rgba(46, 204, 113, 0.2);
+            border: 2px solid #2ecc71;
+        }
+        
+        .vs {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ffcc00;
+        }
+        
+        .player {
+            font-size: 1.2rem;
+            margin: 8px 0;
+        }
+        
+        .sets {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .set-score {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            min-width: 60px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .stat-card {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ffcc00;
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .elo-difference {
+            font-size: 1.1rem;
+            text-align: center;
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .history {
+            margin-top: 25px;
+        }
+        
+        .history h3 {
+            color: #ffcc00;
+            margin-bottom: 15px;
+        }
+        
+        .history-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border-left: 3px solid #ffcc00;
+            font-size: 0.9rem;
+        }
+        
+        .positive {
+            color: #2ecc71;
+        }
+        
+        .negative {
+            color: #e74c3c;
+        }
+        
+        .desglose-detallado {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .desglose-detallado h3 {
+            color: #ffcc00;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .desglose-partido {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .desglose-partido h4 {
+            color: #ff9a00;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .jugador-desglose {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            border-left: 3px solid #ffcc00;
+        }
+        
+        .jugador-nombre {
+            font-weight: bold;
+            color: #ffcc00;
+            margin-bottom: 8px;
+        }
+        
+        .factor-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+            padding: 3px 0;
+            font-size: 0.8rem;
+        }
+        
+        .factor-nombre {
+            color: #ccc;
+        }
+        
+        .factor-valor {
+            font-weight: bold;
+        }
+        
+        .factor-positivo {
+            color: #2ecc71;
+        }
+        
+        .factor-negativo {
+            color: #e74c3c;
+        }
+        
+        .factor-neutral {
+            color: #f39c12;
+        }
+        
+        .total-cambio {
+            margin-top: 10px;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .total-positivo {
+            color: #2ecc71;
+            border: 1px solid #2ecc71;
+        }
+        
+        .total-negativo {
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 900px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .teams {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .team {
+                width: 100%;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            
+            .page-header h1 {
+                font-size: 2rem;
+            }
+            
+            .page-header .subtitle {
+                font-size: 1rem;
+            }
+            
+            .panel {
+                padding: 15px;
+            }
+            
+            .ranking-table {
+                font-size: 0.8rem;
+            }
+            
+            .ranking-table th,
+            .ranking-table td {
+                padding: 8px 4px;
+                font-size: 0.75rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .factor-item {
+                flex-direction: column;
+                gap: 2px;
+            }
+        }
+        
+        /* Scrollbar personalizado */
+        .container::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+        .container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+        
+        .container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+        
+        .container::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Estilos para el modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            height: calc(85vh - 120px);
+        }
+
+        .player-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            padding: 12px 20px;
+            background: rgba(0, 0, 0, 0.2);
+            flex-shrink: 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-icon {
+            font-size: 1.3rem;
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #f1c40f;
+            margin-bottom: 2px;
+        }
+
+        .stat-label {
+            font-size: 0.65rem;
+            color: #bdc3c7;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .match-history {
+            padding: 15px 20px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .match-history h3 {
+            color: #f1c40f;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+
+        /* Estilos para la sección de comparación */
+        .comparison-panel {
+            margin-top: 25px;
+        }
+
+        .comparison-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 15px;
+            align-items: end;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+        }
+
+        .player-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .player-selector label {
+            color: #f1c40f;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .player-select {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 10px 12px;
+            color: white;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .player-select:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .player-select:focus {
+            outline: none;
+            border-color: #f1c40f;
+            box-shadow: 0 0 0 2px rgba(241, 196, 15, 0.3);
+        }
+
+        .player-select option {
+            background: #2c3e50;
+            color: white;
+        }
+
+        .compare-btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .compare-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #2980b9, #1f5f8b);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .compare-btn:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .comparison-chart {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 4px;
+            border-radius: 2px;
+        }
+
+        .player1-color {
+            background: #3498db;
+        }
+
+        .player2-color {
+            background: #e74c3c;
+        }
+
+        /* Responsive para comparación */
+        @media (max-width: 768px) {
+            .comparison-controls {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .chart-legend {
+                flex-direction: column;
+                gap: 10px;
+                align-items: center;
+            }
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            z-index: 10;
+            cursor: pointer;
+            transition: color 0.3s;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .close:hover {
+            color: #f1c40f;
+            background: rgba(0, 0, 0, 0.7);
+            border-color: #f1c40f;
+            transform: scale(1.1);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            padding: 25px 30px 20px;
+            border-radius: 18px 18px 0 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-header h2 {
+            margin: 0 0 15px 0;
+            color: #f1c40f;
+            font-size: 1.8rem;
+            text-align: center;
+        }
+
+        .player-badge {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .level-badge, .points-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .level-badge {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: 1px solid #3498db;
+        }
+
+        .points-badge {
+            background: linear-gradient(135deg, #f1c40f, #f39c12);
+            color: #2c3e50;
+            border: 1px solid #f1c40f;
+        }
+
+        .match-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: linear-gradient(135deg, #2980b9, #1f5f8b);
+            transform: scale(1.05);
+        }
+
+        .nav-btn:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #matchCounter {
+            color: #f1c40f;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .match-details {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .match-factors {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .match-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .match-stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .match-stat .stat-label {
+            color: #bdc3c7;
+            font-size: 0.85rem;
+        }
+
+        .match-stat .stat-value {
+            color: #f1c40f;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .match-stat .stat-value.positive {
+            color: #2ecc71;
+        }
+
+        .match-stat .stat-value.negative {
+            color: #e74c3c;
+        }
+
+        .factor-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 6px;
+            border-left: 3px solid #f1c40f;
+        }
+
+        .factor-nombre {
+            color: #bdc3c7;
+            font-size: 0.85rem;
+        }
+
+        .factor-valor {
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .factor-positivo {
+            color: #2ecc71;
+        }
+
+        .factor-negativo {
+            color: #e74c3c;
+        }
+
+        .factor-neutral {
+            color: #f39c12;
+        }
+
+        .total-cambio {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .total-positivo {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+            border: 1px solid #2ecc71;
+        }
+
+        .total-negativo {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+                max-height: 80vh;
+            }
+            
+            .player-stats-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                padding: 15px 20px;
+            }
+            
+            .modal-header {
+                padding: 20px 20px 15px;
+            }
+            
+            .match-history {
+                padding: 15px 20px 20px;
+            }
+            
+            .match-info {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-chart {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #progressChart {
+            height: 300px !important;
+            width: 100% !important;
+        }
+
+        /* Responsive para la tabla */
+        @media (max-width: 1024px) {
+            .ranking-table {
+                font-size: 0.75rem;
+            }
+            
+            .ranking-table th,
+            .ranking-table td {
+                padding: 8px 4px;
+                font-size: 0.75rem;
+            }
+            
+            .stat-value {
+                font-size: 1rem;
+            }
+            
+            .stat-label {
+                font-size: 0.6rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .ranking-table {
+                font-size: 0.7rem;
+                min-width: 500px;
+            }
+            
+            .ranking-table th,
+            .ranking-table td {
+                padding: 6px 3px;
+                font-size: 0.7rem;
+            }
+            
+            .raqueta-indicator {
+                font-size: 1rem;
+                margin-left: 4px;
+            }
+            
+            .position-change {
+                font-size: 0.6rem;
+                padding: 1px 4px;
+            }
+            
+            .puntos-elo {
+                font-size: 0.85rem !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .table-container {
+                margin: 0 -10px;
+            }
+            
+            .ranking-table {
+                font-size: 0.65rem;
+                min-width: 400px;
+            }
+            
+            .ranking-table th,
+            .ranking-table td {
+                padding: 5px 2px;
+                font-size: 0.65rem;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="./css/header.css">
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-content">
+            <img src="./imagenes/Logojafs.png" alt="Logo" class="app-logo">
+            <h1 class="app-title">Ranking en Tiempo Real - Padeluminatis</h1>
+            <button class="menu-toggle" aria-label="Menú">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <nav class="app-nav">
+            <a href="./home.html" class="nav-item"><i class="fas fa-home"></i><span>Inicio</span></a>
+            <a href="./eventos.html" class="nav-item"><i class="fas fa-calendar-check"></i><span>Eventos</span></a>
+            <a href="./calendario.html" class="nav-item"><i class="fas fa-calendar-alt"></i><span>Calendario</span></a>
+            <a href="./clasificacion.html" class="nav-item"><i class="fas fa-trophy"></i><span>Clasificación</span></a>
+            <a href="./normas.html" class="nav-item"><i class="fas fa-gavel"></i><span>Normas</span></a>
+            <a href="./chat.html" class="nav-item"><i class="fas fa-comments"></i><span>Chat</span></a>
+            <a href="./simulador-visual-real.html" class="nav-item active"><i class="fas fa-chart-line"></i><span>Ranking</span></a>
+            <a href="./admin.html" class="nav-item nav-admin" style="display:none"><i class="fas fa-user-shield"></i><span>Admin</span></a>
+            <a href="./perfil.html" class="nav-item"><i class="fas fa-user"></i><span>Perfil</span></a>
+            <a href="./notificaciones.html" class="nav-item"><i class="fas fa-bell"></i><span>Notificaciones</span></a>
+            <a href="#" class="nav-item nav-logout"><i class="fas fa-sign-out-alt"></i><span>Cerrar sesión</span></a>
+        </nav>
+    </header>
+    
+    <div class="container">
+        <div class="page-header">
+            <h1>🏆 Ranking en Tiempo Real</h1>
+            <p class="subtitle">Clasificación actualizada automáticamente con los últimos partidos jugados</p>
+            <div id="userInfo" style="margin-top: 15px; padding: 10px; background: rgba(46, 204, 113, 0.2); border-radius: 8px; border: 1px solid #2ecc71; display: none;">
+                <span style="color: #2ecc71; font-weight: bold;">👤 Nombre Usuario: </span>
+                <span id="userPosition" style="color: #fff;"></span>
+            </div>
+            <button id="btnActualizarRanking" style="margin-top: 20px; padding: 12px 30px; font-size: 1.1rem; background: linear-gradient(135deg, #ffcc00, #ff9900); color: #222; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 8px rgba(255,204,0,0.2); transition: background 0.3s;">🔄 Actualizar Tabla</button>
+        </div>
+        
+        <div class="panel">
+            <h2 class="panel-title">
+                <i class="fas fa-trophy"></i>
+                Ranking de Jugadores
+            </h2>
+            <div class="tabla-responsive-wrapper">
+                <table class="ranking-table">
+                    <thead>
+                        <tr>
+                            <th>Pos</th>
+                            <th>Jugador</th>
+                            <th>Nivel</th>
+                            <th>PJ</th>
+                            <th>PG</th>
+                            <th>Sets</th>
+                            <th>Puntos</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rankingBody">
+                        <!-- Los datos se cargarán dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para detalles del jugador -->
+    <div id="playerModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-header">
+                <h2 id="modalPlayerName">Detalles del Jugador</h2>
+                <div class="player-badge">
+                    <span id="modalPlayerLevel" class="level-badge"></span>
+                    <span id="modalPlayerPoints" class="points-badge"></span>
+                </div>
+            </div>
+            
+            <div class="modal-body">
+                <div class="player-stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">🎾</div>
+                        <div class="stat-value" id="modalPlayerMatches">0</div>
+                        <div class="stat-label">Partidos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🏆</div>
+                        <div class="stat-value" id="modalPlayerWins">0</div>
+                        <div class="stat-label">Victorias</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-value" id="modalPlayerWinRate">0%</div>
+                        <div class="stat-label">Win Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⚡</div>
+                        <div class="stat-value" id="modalPlayerSets">0-0</div>
+                        <div class="stat-label">Sets</div>
+                    </div>
+                </div>
+                
+                <div class="match-history">
+                    <h3>📈 Historial de Partidos</h3>
+                    <div class="match-navigation">
+                        <button id="prevMatch" class="nav-btn">←</button>
+                        <span id="matchCounter">Partido 1 de X</span>
+                        <button id="nextMatch" class="nav-btn">→</button>
+                    </div>
+                    
+                    <div id="matchDetails" class="match-details">
+                        <!-- Detalles del partido actual -->
+                    </div>
+                    
+                    <div id="matchFactors" class="match-factors">
+                        <!-- Factores del partido actual -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección de comparación de usuarios -->
+    <div class="panel comparison-panel">
+        <h3 class="panel-title">
+            <i>📊</i>
+            Comparar Usuarios
+        </h3>
+        <div class="comparison-controls">
+            <div class="player-selector">
+                <label for="player1Select">Jugador 1:</label>
+                <select id="player1Select" class="player-select">
+                    <option value="">Seleccionar jugador...</option>
+                </select>
+            </div>
+            <div class="player-selector">
+                <label for="player2Select">Jugador 2:</label>
+                <select id="player2Select" class="player-select">
+                    <option value="">Seleccionar jugador...</option>
+                </select>
+            </div>
+            <button id="compareBtn" class="compare-btn" disabled>
+                📊 Comparar Progreso
+            </button>
+        </div>
+        <div id="comparisonChart" class="comparison-chart" style="display: none;">
+            <canvas id="progressChart"></canvas>
+            <div class="chart-legend">
+                <div class="legend-item">
+                    <span class="legend-color player1-color"></span>
+                    <span id="legendPlayer1">Jugador 1</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color player2-color"></span>
+                    <span id="legendPlayer2">Jugador 2</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+    import { db } from './js/firebase-config.js';
+    import { collection, getDocs, updateDoc, doc, query, orderBy, collectionGroup } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
+
+    let players = [];
+    let equipos = {};
+    let partidos = [];
+
+    async function cargarJugadoresYEquipos() {
+      // Cargar jugadores
+      const usuariosSnap = await getDocs(collection(db, "usuarios"));
+      players = usuariosSnap.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          name: data.nombreUsuario || data.displayName || data.nombre || 'Sin nombre',
+          nivel: parseFloat(data.nivel) || 2.0,
+          puntosRanking: 500 + ((parseFloat(data.nivel) || 2.0) * 10 * 2),
+          puntosNivel: 300,
+          progresoNivel: 50,
+          matches: 0,
+          wins: 0,
+          setsWon: 0,
+          setsLost: 0,
+          history: []
+        };
+      });
+      // Cargar equipos
+      const equiposSnap = await getDocs(collection(db, "equipos"));
+      equipos = {};
+      equiposSnap.docs.forEach(doc => {
+        const data = doc.data();
+        equipos[doc.id] = {
+          id: doc.id,
+          nombre: data.nombre || `Equipo ${doc.id}`,
+          jugadores: data.jugadores || []
+        };
+      });
+      // Cargar jornadas y partidos
+      partidos = [];
+      const calendarioSnap = await getDocs(collection(db, "calendario"));
+      for (const jornadaDoc of calendarioSnap.docs) {
+        const partidosSnap = await getDocs(collection(db, `calendario/${jornadaDoc.id}/partidos`));
+        partidosSnap.docs.forEach(doc => {
+          const data = doc.data();
+          if (data.resultado && data.resultado.set1) {
+            partidos.push({
+              ...data,
+              id: doc.id,
+              tipo: 'liga',
+              fecha: data.fecha?.toDate ? data.fecha.toDate() : new Date(),
+              equipoLocalId: data.equipoLocal,
+              equipoVisitanteId: data.equipoVisitante
+            });
+          }
+        });
+      }
+      // Cargar partidos amistosos
+      const amistososSnap = await getDocs(collection(db, "partidosAmistosos"));
+      amistososSnap.docs.forEach(doc => {
+        const data = doc.data();
+        if (data.resultado && data.resultado.set1) {
+          partidos.push({
+            ...data,
+            id: doc.id,
+            tipo: 'amistoso',
+            fecha: data.fecha?.toDate ? data.fecha.toDate() : new Date(),
+            jugadores: data.jugadores || []
+          });
+        }
+      });
+      // Cargar partidos reto
+      const retosSnap = await getDocs(collection(db, "partidosReto"));
+      retosSnap.docs.forEach(doc => {
+        const data = doc.data();
+        if (data.resultado && data.resultado.set1) {
+          partidos.push({
+            ...data,
+            id: doc.id,
+            tipo: 'reto',
+            fecha: data.fecha?.toDate ? data.fecha.toDate() : new Date(),
+            jugadores: data.jugadores || []
+          });
+        }
+      });
+      // Ordenar partidos por fecha
+      partidos = partidos.sort((a, b) => a.fecha - b.fecha);
+    }
+
+    function calcularCambioPuntosElo(player, comp, resultado, victoria, rivales, tipo) {
+      // Lógica de Elo más justa y equilibrada
+      const avgRivalElo = rivales.reduce((acc, r) => acc + (r.elo || 1000), 0) / rivales.length;
+      const expected = 1 / (1 + Math.pow(10, (avgRivalElo - player.elo) / 400));
+      
+      // Factor K más equilibrado
+      let k = 32;
+      if (player.matches >= 30) k = 16;
+      else if (player.matches >= 10) k = 24;
+      
+      const ri = victoria ? 1 : 0;
+      
+      // Factores más equilibrados y justos
+      const factorNivelPartido = ((player.nivel + comp.nivel + rivales[0].nivel + rivales[1].nivel) / 4 - 2.0) * 2.0;
+      const factorCompanero = (player.nivel - comp.nivel) * 1.5;
+      const factorRivales = ((rivales[0].nivel + rivales[1].nivel) / 2 - player.nivel) * 2.0;
+      
+      // Factor de marcador más equilibrado
+      const diffJuegos = Math.abs(resultado.juegosLocal - resultado.juegosVisitante);
+      const factorMarcador = victoria ? diffJuegos * 1.0 : -diffJuegos * 0.8;
+      
+      const factorNivelIndividual = (player.nivel - 2.0) * 1.5;
+      
+      // Factores de tipo de partido más equilibrados
+      let factorTipoPartido = 0;
+      switch (tipo) {
+        case 'liga': factorTipoPartido = 2.0; break;
+        case 'reto': factorTipoPartido = 1.5; break;
+        case 'amistoso': factorTipoPartido = 0.5; break;
+        case 'torneo': factorTipoPartido = 2.5; break;
+        default: factorTipoPartido = 1.0;
+      }
+      
+      // Factor de experiencia más moderado
+      const factorExperiencia = Math.min(1.5, player.matches * 0.1);
+      
+      // Factor de racha más equilibrado
+      let factorRacha = 0;
+      if (player.matches > 0) {
+        const porcentajeVictorias = (player.wins / player.matches) * 100;
+        if (porcentajeVictorias < 25) factorRacha = 1.0;
+        else if (porcentajeVictorias > 75) factorRacha = -0.8;
+      }
+      
+      // Factor de presión más moderado
+      let factorPresion = 0;
+      if (tipo === 'liga' && player.matches < 5) factorPresion = 1.0;
+      else if (tipo === 'liga' && player.matches > 20) factorPresion = -0.5;
+      
+      // Suma de factores más equilibrada
+      const sumaFactores = factorNivelPartido + factorCompanero + factorRivales + factorMarcador + 
+                          factorNivelIndividual + factorTipoPartido + factorExperiencia + factorRacha + factorPresion;
+      
+      // Cálculo final más equilibrado
+      const change = k * (ri - expected) + sumaFactores;
+      
+      // Limitar el cambio máximo para evitar cambios extremos
+      const maxChange = 50;
+      const finalChange = Math.max(-maxChange, Math.min(maxChange, change));
+      
+      // Calcular dificultad real (diferencia de nivel promedio)
+      const dificultadReal = Math.abs(((rivales[0].nivel + rivales[1].nivel) / 2) - player.nivel);
+      
+      return {
+        cambio: finalChange,
+        dificultad: dificultadReal,
+        factores: {
+          nivelPartido: factorNivelPartido,
+          companero: factorCompanero,
+          rivales: factorRivales,
+          marcador: factorMarcador,
+          nivelIndividual: factorNivelIndividual,
+          tipoPartido: factorTipoPartido,
+          experiencia: factorExperiencia,
+          racha: factorRacha,
+          presion: factorPresion
+        }
+      };
+    }
+
+    // Función para calcular cambio de nivel estilo Pokémon
+    function calcularCambioNivel(player, rivales, victoria, cambioPuntos) {
+      const nivelPromedioRivales = (rivales[0].nivel + rivales[1].nivel) / 2;
+      const diferenciaNivel = nivelPromedioRivales - player.nivel;
+      
+      // Base de cambio de nivel
+      let cambioNivel = 0;
+      
+      if (victoria) {
+        // Sistema Pokémon: Más puntos si ganas contra rivales de nivel alto
+        if (diferenciaNivel > 0.5) {
+          // Ganas contra rivales mucho más fuertes: +0.03
+          cambioNivel = 0.03;
+        } else if (diferenciaNivel > 0.2) {
+          // Ganas contra rivales más fuertes: +0.02
+          cambioNivel = 0.02;
+        } else if (diferenciaNivel > -0.2) {
+          // Ganas contra rivales de nivel similar: +0.01
+          cambioNivel = 0.01;
+        } else if (diferenciaNivel > -0.5) {
+          // Ganas contra rivales más débiles: +0.005
+          cambioNivel = 0.005;
+        } else {
+          // Ganas contra rivales mucho más débiles: +0.002
+          cambioNivel = 0.002;
+        }
+      } else {
+        // Sistema Pokémon: Pierdes más nivel si pierdes contra rivales débiles
+        if (diferenciaNivel < -0.5) {
+          // Pierdes contra rivales mucho más débiles: -0.03
+          cambioNivel = -0.03;
+        } else if (diferenciaNivel < -0.2) {
+          // Pierdes contra rivales más débiles: -0.02
+          cambioNivel = -0.02;
+        } else if (diferenciaNivel < 0.2) {
+          // Pierdes contra rivales de nivel similar: -0.01
+          cambioNivel = -0.01;
+        } else if (diferenciaNivel < 0.5) {
+          // Pierdes contra rivales más fuertes: -0.005
+          cambioNivel = -0.005;
+        } else {
+          // Pierdes contra rivales mucho más fuertes: -0.002
+          cambioNivel = -0.002;
+        }
+      }
+      
+      // Factor adicional basado en el cambio de puntos
+      const factorPuntos = Math.abs(cambioPuntos) / 50; // Normalizar a 0-1
+      cambioNivel *= (0.5 + factorPuntos * 0.5); // Entre 50% y 100% del cambio base
+      
+      // Limitar el nivel entre 2.00 y 4.00
+      const nuevoNivel = Math.max(2.00, Math.min(4.00, player.nivel + cambioNivel));
+      
+      return {
+        cambioNivel: nuevoNivel - player.nivel,
+        nuevoNivel: nuevoNivel,
+        diferenciaRivales: diferenciaNivel
+      };
+    }
+
+    // Función para calcular progreso de nivel (usando niveles manuales)
+    function calcularProgresoNivel(nivel) {
+      // Niveles manuales que añadiste: 3.20, 3.25, etc.
+      const niveles = [
+        { nivel: 2.00, nombre: "Principiante" },
+        { nivel: 2.50, nombre: "Novato" },
+        { nivel: 3.00, nombre: "Intermedio Bajo" },
+        { nivel: 3.20, nombre: "Intermedio" },
+        { nivel: 3.25, nombre: "Intermedio Alto" },
+        { nivel: 3.30, nombre: "Avanzado Bajo" },
+        { nivel: 3.35, nombre: "Avanzado" },
+        { nivel: 3.40, nombre: "Avanzado Alto" },
+        { nivel: 3.45, nombre: "Experto" },
+        { nivel: 3.50, nombre: "Maestro" },
+        { nivel: 4.00, nombre: "Leyenda" }
+      ];
+      
+      // Encontrar el nivel actual y el siguiente
+      let nivelActual = niveles[0];
+      let nivelSiguiente = null;
+      
+      for (let i = 0; i < niveles.length; i++) {
+        if (nivel >= niveles[i].nivel) {
+          nivelActual = niveles[i];
+          nivelSiguiente = niveles[i + 1] || null;
+        } else {
+          break;
+        }
+      }
+      
+      let progreso = 0;
+      let puntosParaSubir = 0;
+      
+      if (nivelSiguiente) {
+        progreso = ((nivel - nivelActual.nivel) / (nivelSiguiente.nivel - nivelActual.nivel)) * 100;
+        puntosParaSubir = nivelSiguiente.nivel - nivel;
+      } else {
+        progreso = 100;
+        puntosParaSubir = 0;
+      }
+      
+      return {
+        nivel: nivel,
+        nombre: nivelActual.nombre,
+        progreso: Math.min(100, Math.max(0, progreso)),
+        puntosParaSubir: Math.max(0, puntosParaSubir),
+        nivelSiguiente: nivelSiguiente ? nivelSiguiente.nivel : nivel
+      };
+    }
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      await renderTablaVacia();
+      document.getElementById('btnActualizarRanking').addEventListener('click', async () => {
+        console.log('Botón Actualizar Tabla pulsado');
+        await reiniciarNivelesYPuntos();
+        await cargarJugadoresYEquipos();
+        console.log('Jugadores y equipos cargados:', players, equipos);
+        await procesarPartidosDesdeCero();
+        console.log('Procesamiento de partidos finalizado');
+      });
+    });
+
+    async function renderTablaVacia() {
+      // Opcional: puedes mostrar la tabla vacía o con los puntos/niveles base
+      const usuariosSnap = await getDocs(collection(db, "usuarios"));
+      const tbody = document.getElementById('rankingBody');
+      tbody.innerHTML = '';
+      usuariosSnap.forEach(docu => {
+        const data = docu.data();
+        tbody.innerHTML += `<tr><td>-</td><td>${data.nombreUsuario || data.nombre || 'Sin nombre'}</td><td>0</td><td>0</td><td>0</td><td>0-0</td><td>0</td></tr>`;
+      });
+    }
+
+    async function reiniciarNivelesYPuntos() {
+      // Reinicia los niveles y puntos de todos los usuarios a 0 (o base)
+      const usuariosSnap = await getDocs(collection(db, "usuarios"));
+      for (const docu of usuariosSnap.docs) {
+        const data = docu.data();
+        const nivelBase = data.nivel || 2.00;
+        const puntosBase = 600 + (nivelBase * 100);
+        await updateDoc(doc(db, "usuarios", docu.id), {
+          nivel: nivelBase,
+          puntosRanking: puntosBase,
+          puntosRankingInicio: puntosBase,
+          partidosJugados: 0,
+          victorias: 0,
+          setsGanados: 0,
+          setsPerdidos: 0,
+          dificultadMedia: 0,
+          historial: []
+        });
+      }
+    }
+
+    async function procesarPartidosDesdeCero() {
+      // Variables y funciones auxiliares necesarias para el procesamiento de partidos
+      let rankingAnterior = [];
+      let posicionesAnteriores = {};
+      
+      function obtenerJugadoresEquipo(equipoId) {
+        const equipo = equipos[equipoId];
+        if (!equipo || !equipo.jugadores) return [];
+        return equipo.jugadores.map(jugadorId => {
+          return players.find(j => j.id === jugadorId) || { id: jugadorId, name: 'Desconocido', nivel: 2.0, puntosRanking: 800, puntosNivel: 300, matches: 0, wins: 0, setsWon: 0, setsLost: 0, history: [] };
+        });
+      }
+      
+      function corregirDatosJugador(player) {
+        player.nivel = (player.nivel !== undefined && player.nivel !== null && !isNaN(player.nivel)) ? parseFloat(player.nivel) : 2.0;
+        if (player.elo !== undefined && player.elo !== null && !isNaN(player.elo)) {
+          player.puntosRanking = parseFloat(player.elo);
+        }
+        if (player.puntosRanking === undefined || player.puntosRanking === null || isNaN(player.puntosRanking)) {
+          player.puntosRanking = 500 + (player.nivel * 10 * 2);
+        }
+        if (isNaN(player.puntosRanking)) player.puntosRanking = 0;
+        player.puntosNivel = (player.puntosNivel !== undefined && player.puntosNivel !== null && !isNaN(player.puntosNivel)) ? parseFloat(player.puntosNivel) : 0;
+        player.progresoNivel = (player.progresoNivel !== undefined && player.progresoNivel !== null && !isNaN(player.progresoNivel)) ? parseFloat(player.progresoNivel) : 0;
+        player.matches = (player.matches !== undefined && player.matches !== null && !isNaN(player.matches)) ? parseInt(player.matches) : 0;
+        player.wins = (player.wins !== undefined && player.wins !== null && !isNaN(player.wins)) ? parseInt(player.wins) : 0;
+        player.setsWon = (player.setsWon !== undefined && player.setsWon !== null && !isNaN(player.setsWon)) ? parseInt(player.setsWon) : 0;
+        player.setsLost = (player.setsLost !== undefined && player.setsLost !== null && !isNaN(player.setsLost)) ? parseInt(player.setsLost) : 0;
+        return player;
+      }
+      
+      function addRowClickEvents() {
+        const tbody = document.getElementById('rankingBody');
+        if (!tbody) return;
+        Array.from(tbody.children).forEach((tr, idx) => {
+          tr.onclick = () => {
+            const sortedPlayers = [...players].map(corregirDatosJugador).sort((a, b) => b.puntosRanking - a.puntosRanking);
+            mostrarModalJugador(sortedPlayers[idx]);
+          };
+        });
+      }
+      
+      function updateRankingTable() {
+        const tbody = document.getElementById('rankingBody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        const sortedPlayers = [...players].map(corregirDatosJugador).sort((a, b) => b.puntosRanking - a.puntosRanking);
+        const rankingActual = sortedPlayers.map(p => p.id);
+        let idsUltimoPartido = [];
+        if (partidos && partidos.length > 0) {
+          const ultimo = partidos[partidos.length - 1];
+          if (ultimo.tipo === 'liga') {
+            idsUltimoPartido = [
+              ...(ultimo.equipoLocalId ? obtenerJugadoresEquipo(ultimo.equipoLocalId).map(j => j.id) : []),
+              ...(ultimo.equipoVisitanteId ? obtenerJugadoresEquipo(ultimo.equipoVisitanteId).map(j => j.id) : [])
+            ];
+          } else if (ultimo.jugadores && ultimo.jugadores.length >= 4) {
+            idsUltimoPartido = ultimo.jugadores;
+          }
+        }
+        sortedPlayers.forEach((player, index) => {
+          let deltaPuntos = 0;
+          let deltaHtml = '';
+          let cambioPos = '';
+          if (idsUltimoPartido.includes(player.id)) {
+            const lastMatch = player.history && player.history.length > 0 ? player.history[player.history.length - 1] : null;
+            if (lastMatch) {
+              deltaPuntos = lastMatch.puntosRankingDespues - lastMatch.puntosRankingAntes;
+              if (deltaPuntos > 0) deltaHtml = `<span style='color:#2ecc71;font-weight:bold;'>&uarr; +${deltaPuntos.toFixed(2)}</span>`;
+              else if (deltaPuntos < 0) deltaHtml = `<span style='color:#e74c3c;font-weight:bold;'>&darr; ${deltaPuntos.toFixed(2)}</span>`;
+            }
+            if (posicionesAnteriores[player.id] !== undefined) {
+              const diff = posicionesAnteriores[player.id] - index;
+              if (diff > 0) cambioPos = `<span style='color:#2ecc71;font-weight:bold;'>&uarr;${diff}</span>`;
+              else if (diff < 0) cambioPos = `<span style='color:#e74c3c;font-weight:bold;'>&darr;${Math.abs(diff)}</span>`;
+              else cambioPos = `<span style='color:#bdc3c7;font-weight:bold;'>&rarr;0</span>`;
+            }
+          }
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td style="font-weight: bold; color: #f1c40f;">${index + 1} ${cambioPos}</td>
+            <td><div style="font-weight: 600;">${player.name} ${deltaHtml}</div></td>
+            <td style="color: #fff; font-weight: bold;">${parseFloat(player.nivel).toFixed(2)}</td>
+            <td style="text-align: center;"><div style="font-weight: bold;">${player.matches}</div></td>
+            <td style="text-align: center;"><div style="font-weight: bold; color: #2ecc71;">${player.wins}</div></td>
+            <td style="text-align: center;"><div style="font-weight: bold;">${player.setsWon}-${player.setsLost}</div></td>
+            <td class="puntos-elo puntos-elo-grande" style="color: #f1c40f; font-weight: bold; font-size: 1.3rem; min-width: 140px;">${player.puntosRanking.toFixed(2)}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+        addRowClickEvents();
+      }
+      
+      // Instancia del sistema de puntuación avanzado (debes definir la clase o función correspondiente)
+      const sistemaPuntuacion = new SistemaPuntuacionAvanzado();
+      
+      // Lógica de procesamiento de partidos y actualización de usuarios
+      rankingAnterior = players.map(p => ({ id: p.id, puntosRanking: p.puntosRanking }));
+      const sortedPrev = [...players].map(corregirDatosJugador).sort((a, b) => b.puntosRanking - a.puntosRanking);
+      sortedPrev.forEach((p, idx) => { posicionesAnteriores[p.id] = idx; });
+      for (const partido of partidos) {
+        console.log('Procesando partido:', partido);
+        let jugadoresLocal = [];
+        let jugadoresVisitante = [];
+        if (partido.tipo === 'liga') {
+          jugadoresLocal = obtenerJugadoresEquipo(partido.equipoLocalId);
+          jugadoresVisitante = obtenerJugadoresEquipo(partido.equipoVisitanteId);
+        } else {
+          if (partido.jugadores && partido.jugadores.length >= 4) {
+            jugadoresLocal = partido.jugadores.slice(0, 2).map(jid => players.find(j => j.id === jid) || { id: jid, name: 'Desconocido', nivel: 2.0, puntosRanking: 800, puntosNivel: 300, matches: 0, wins: 0, setsWon: 0, setsLost: 0, history: [] });
+            jugadoresVisitante = partido.jugadores.slice(2, 4).map(jid => players.find(j => j.id === jid) || { id: jid, name: 'Desconocido', nivel: 2.0, puntosRanking: 800, puntosNivel: 300, matches: 0, wins: 0, setsWon: 0, setsLost: 0, history: [] });
+          } else {
+            jugadoresLocal = players.slice(0, 2);
+            jugadoresVisitante = players.slice(2, 4);
+          }
+        }
+        if (jugadoresLocal.length < 2 || jugadoresVisitante.length < 2) continue;
+        const resultado = partido.resultado;
+        if (!resultado || !resultado.set1) continue;
+        const setsLocal = [resultado.set1.puntos1, resultado.set2?.puntos1 || 0, resultado.set3?.puntos1 || 0];
+        const setsVisitante = [resultado.set1.puntos2, resultado.set2?.puntos2 || 0, resultado.set3?.puntos2 || 0];
+        let setsGanadosLocal = 0;
+        let setsGanadosVisitante = 0;
+        for (let i = 0; i < 3; i++) {
+          if (setsLocal[i] > setsVisitante[i]) {
+            setsGanadosLocal++;
+          } else if (setsVisitante[i] > setsLocal[i]) {
+            setsGanadosVisitante++;
+          }
+        }
+        const team1Wins = setsGanadosLocal > setsGanadosVisitante;
+        const diferenciaMarcador = Math.abs(setsGanadosLocal - setsGanadosVisitante);
+        const setsJugados = (resultado.set1 ? 1 : 0) + (resultado.set2 ? 1 : 0) + (resultado.set3 ? 1 : 0);
+        [...jugadoresLocal, ...jugadoresVisitante].forEach((player, idx) => {
+          const win = (idx < 2 && team1Wins) || (idx >= 2 && !team1Wins);
+          const companero = idx % 2 === 0 ? (idx < 2 ? jugadoresLocal[1] : jugadoresVisitante[1]) : (idx < 2 ? jugadoresLocal[0] : jugadoresVisitante[0]);
+          const rivales = idx < 2 ? jugadoresVisitante : jugadoresLocal;
+          const experiencia = player.matches;
+          let racha = player.racha || 0;
+          if (win) {
+            racha = racha >= 0 ? racha + 1 : 1;
+          } else {
+            racha = racha <= 0 ? racha - 1 : -1;
+          }
+          player.racha = racha;
+          // Declarar solo una vez por jugador:
+          let puntosAntes = player.puntosRanking;
+          let nivelAntes = player.nivel;
+          const resultadoPuntuacion = sistemaPuntuacion.calcularCambio({
+            jugador: player,
+            rivales: rivales,
+            resultado: win ? 1 : 0,
+            tipoPartido: partido.tipo || 'liga',
+            margenSets: diferenciaMarcador,
+            experiencia: experiencia,
+            racha: racha,
+            setsJugados: setsJugados,
+            companero: companero,
+            formaRivales: rivales.reduce((a, r) => a + (r.racha || 0), 0),
+            esPartidoDecisivo: false,
+            diasSinJugar: 0
+          });
+          console.log(`Jugador: ${player.name}, puntos obtenidos en este partido:`, resultadoPuntuacion.puntos);
+          // Sumar/restar los puntosRanking obtenidos en este partido
+          player.puntosRanking += resultadoPuntuacion.puntos;
+          player.puntosRanking = Math.max(0, player.puntosRanking);
+          // Ajuste extra: cada 100 puntos de diferencia, sube o baja 0.05 de nivel
+          let ajusteExtra = Math.floor((player.puntosRanking - puntosAntes) / 100) * 0.05;
+          // Ajustar el nivel con la fórmula progresiva y el ajuste extra
+          player.nivel = Math.max(2.0, Math.min(4.0, player.nivel + resultadoPuntuacion.cambioNivel + ajusteExtra));
+          // Guardar en el historial el nivel antes y después, y el cambio de puntos y nivel
+          player.history.push({
+            partidoId: partido.id,
+            fecha: partido.fecha,
+            rival: rivales.map(r => r.name),
+            companero: companero.name,
+            resultado: win ? 'victoria' : 'derrota',
+            puntosRankingAntes: puntosAntes,
+            puntosRankingDespues: player.puntosRanking,
+            nivelAntes: nivelAntes,
+            nivelDespues: player.nivel,
+            cambioNivel: resultadoPuntuacion.cambioNivel + ajusteExtra,
+            desglose: resultadoPuntuacion.desglose,
+            racha: racha,
+            diferenciaMarcador: diferenciaMarcador,
+            setsGanados: idx < 2 ? setsGanadosLocal : setsGanadosVisitante,
+            setsPerdidos: idx < 2 ? setsGanadosVisitante : setsGanadosLocal
+          });
+        });
+      }
+      updateRankingTable();
+      console.log('Ranking actualizado:', players.map(p => ({ name: p.name, puntosRanking: p.puntosRanking, nivel: p.nivel })));
+    }
+
+    // 2. Modal de desglose de puntos por partido
+    // Añadir función mostrarModalJugador con desglose detallado
+    function mostrarModalJugador(player) {
+      const modal = document.getElementById('playerModal');
+      document.getElementById('modalPlayerName').textContent = player.name;
+      document.getElementById('modalPlayerLevel').textContent = `Nivel: ${parseFloat(player.nivel).toFixed(2)}`;
+      document.getElementById('modalPlayerPoints').textContent = `Puntos: ${player.puntosRanking.toFixed(2)}`;
+      document.getElementById('modalPlayerMatches').textContent = player.matches;
+      document.getElementById('modalPlayerWins').textContent = player.wins;
+      document.getElementById('modalPlayerWinRate').textContent = player.matches > 0 ? `${((player.wins / player.matches) * 100).toFixed(1)}%` : '0%';
+      document.getElementById('modalPlayerSets').textContent = `${player.setsWon}-${player.setsLost}`;
+
+      // Desglose de partidos
+      const matchDetails = document.getElementById('matchDetails');
+      const matchFactors = document.getElementById('matchFactors');
+      matchDetails.innerHTML = '';
+      matchFactors.innerHTML = '';
+      if (player.history && player.history.length > 0) {
+        let idx = player.history.length - 1;
+        mostrarPartido(idx);
+        let currentIdx = idx;
+        document.getElementById('prevMatch').onclick = () => {
+          if (currentIdx > 0) { currentIdx--; mostrarPartido(currentIdx); }
+        };
+        document.getElementById('nextMatch').onclick = () => {
+          if (currentIdx < player.history.length - 1) { currentIdx++; mostrarPartido(currentIdx); }
+        };
+        function mostrarPartido(i) {
+          const h = player.history[i];
+          matchDetails.innerHTML = `
+            <div><b>Partido:</b> ${h.partidoId || ''} (${h.fecha ? new Date(h.fecha).toLocaleDateString() : ''})</div>
+            <div><b>Compañero:</b> ${h.companero}</div>
+            <div><b>Rivales:</b> ${h.rival.join(' & ')}</div>
+            <div><b>Resultado:</b> ${h.resultado}</div>
+            <div><b>Puntos antes:</b> ${h.puntosRankingAntes.toFixed(2)}</div>
+            <div><b>Puntos después:</b> ${h.puntosRankingDespues.toFixed(2)}</div>
+            <div><b>Cambio puntos:</b> <span style='color:${(h.puntosRankingDespues-h.puntosRankingAntes)>=0?'#2ecc71':'#e74c3c'};'>${(h.puntosRankingDespues-h.puntosRankingAntes).toFixed(2)}</span></div>
+            <div><b>Nivel antes:</b> ${h.nivelAntes ? h.nivelAntes.toFixed(2) : '-'}</div>
+            <div><b>Nivel después:</b> ${h.nivelDespues ? h.nivelDespues.toFixed(2) : '-'}</div>
+            <div><b>Cambio nivel:</b> <span style='color:${(h.cambioNivel)>=0?'#2ecc71':'#e74c3c'};'>${(h.cambioNivel).toFixed(3)}</span></div>
+            <div><b>Diferencia marcador:</b> ${h.diferenciaMarcador}</div>
+            <div><b>Racha:</b> ${h.racha}</div>
+            <div><b>Sets ganados:</b> ${h.setsGanados} | <b>Sets perdidos:</b> ${h.setsPerdidos}</div>
+          `;
+          // Desglose de factores
+          if (h.desglose && typeof h.desglose === 'object') {
+            let desgloseHtml = '<h4>Desglose de variables:</h4><ul style="font-size:1.1em;">';
+            let sumaTotal = 0;
+            for (const [clave, valor] of Object.entries(h.desglose)) {
+              desgloseHtml += `<li><b>${clave}:</b> <span style='color:${valor >= 0 ? '#2ecc71' : '#e74c3c'};'>${valor.toFixed(2)}</span></li>`;
+              sumaTotal += valor;
+            }
+            desgloseHtml += `<li style='margin-top:8px;'><b>Total variables:</b> <span style='color:#f1c40f;font-size:1.2em;'>${sumaTotal.toFixed(2)}</span></li>`;
+            desgloseHtml += '</ul>';
+            matchFactors.innerHTML = desgloseHtml;
+          } else {
+            matchFactors.innerHTML = '<i>No hay desglose disponible para este partido.</i>';
+          }
+          document.getElementById('matchCounter').textContent = `Partido ${i + 1} de ${player.history.length}`;
+        }
+      } else {
+        matchDetails.innerHTML = '<i>No hay historial de partidos.</i>';
+        matchFactors.innerHTML = '';
+      }
+      modal.style.display = 'block';
+      document.querySelector('#playerModal .close').onclick = () => { modal.style.display = 'none'; };
+      window.onclick = (event) => { if (event.target == modal) modal.style.display = 'none'; };
+    }
+    </script>
+    <script src="./js/menu-hamburguesa.js"></script>
+    <script type="module" src="./js/enlaceAdmin.js"></script>
+    <script type="module" src="./js/usuario-session.js"></script>
+
+    <script>
+    // Clase SistemaPuntuacionAvanzado para el cálculo de puntos y nivel
+    class SistemaPuntuacionAvanzado {
+      calcularCambio({
+        jugador,
+        rivales,
+        resultado, // 1 victoria, 0 derrota
+        tipoPartido,
+        margenSets,
+        experiencia,
+        racha,
+        setsJugados,
+        companero,
+        formaRivales,
+        esPartidoDecisivo,
+        diasSinJugar
+      }) {
+        // Factores base
+        let base = tipoPartido === 'liga' ? 20 : tipoPartido === 'reto' ? 15 : 10;
+        const nivelRivales = rivales.reduce((a, r) => a + (r.nivel || 2), 0) / rivales.length;
+        const diffNivel = nivelRivales - (jugador.nivel || 2);
+        const factorResultado = resultado === 1 ? 1 : -1;
+        const factorSets = margenSets * 2 * factorResultado;
+        const factorRacha = (racha || 0) * 1.5;
+        const factorExp = Math.min(5, experiencia * 0.5);
+        const factorComp = companero ? ((companero.nivel || 2) - (jugador.nivel || 2)) * 1.2 : 0;
+        const factorFormaRivales = formaRivales * 0.5;
+        const factorDecisivo = esPartidoDecisivo ? 5 : 0;
+        const factorDias = diasSinJugar ? -Math.min(5, diasSinJugar * 0.2) : 0;
+        const factorDificultad = diffNivel * 8 * factorResultado;
+        const total = base * factorResultado + factorSets + factorRacha + factorExp + factorComp + factorFormaRivales + factorDecisivo + factorDias + factorDificultad;
+        const cambio = Math.max(-50, Math.min(50, total));
+        // --- Cálculo de nivel ---
+        let baseNivel = tipoPartido === 'liga' ? 0.015 : tipoPartido === 'reto' ? 0.012 : 0.008;
+        let factorDificultadNivel = 1 + (diffNivel * 1.5 * factorResultado);
+        let factorMarcador = 1 + (Math.abs(margenSets) * 0.15);
+        let factorRachaNivel = 1 + (Math.sign(racha) * Math.min(Math.abs(racha), 5) * 0.04);
+        let factorExpNivel = 1 - Math.min(experiencia, 30) * 0.01;
+        let cambioNivel = baseNivel * factorResultado * factorDificultadNivel * factorMarcador * factorRachaNivel * factorExpNivel;
+        cambioNivel = Math.max(-0.03, Math.min(0.03, cambioNivel));
+        return {
+          puntos: cambio,
+          cambioNivel: cambioNivel,
+          desglose: {
+            base: base * factorResultado,
+            margenSets: factorSets,
+            racha: factorRacha,
+            experiencia: factorExp,
+            companero: factorComp,
+            formaRivales: factorFormaRivales,
+            decisivo: factorDecisivo,
+            diasSinJugar: factorDias,
+            dificultad: factorDificultad,
+            baseNivel,
+            factorDificultadNivel,
+            factorMarcador,
+            factorRachaNivel,
+            factorExpNivel
+          }
+        };
+      }
+    }
+    </script>
+</body>
+</html> 

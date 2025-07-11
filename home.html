@@ -1,236 +1,157 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Inicio - Liga de Pádel</title>
-  <link rel="stylesheet" href="./css/estilo.css">
-  <link rel="stylesheet" href="./css/home.css">
-  <link rel="shortcut icon" href="./imagenes/Logojafs.png" type="image/x-icon">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0A2342">
+    <title>Inicio - Padeluminatis</title>
+    <link rel="icon" type="image/x-icon" href="./imagenes/Logojafs.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./css/header.css">
+    <link rel="stylesheet" href="./css/home.css">
 </head>
-<body class="pagina-principal">
-  <header class="encabezado">
-                   <div class="logo">
-            <img src="./imagenes/Logojafs.png" alt="Logo de JafsPadel League" width="100" height="100">
+<body class="app-body">
+    <header class="app-header">
+        <div class="header-content">
+            <img src="./imagenes/Logojafs.png" alt="Logo" class="app-logo">
+            <h1 class="app-title">Inicio - Padeluminatis</h1>
+            <button class="menu-toggle" aria-label="Menú">
+                <i class="fas fa-bars"></i>
+            </button>
         </div>
-    <h1 class="titulo">Liga de Pádel</h1>
-
-<button class="menu-hamburguesa" 
-        aria-label="Menú principal"
-        aria-expanded="false"
-        aria-controls="menu-navegacion">
-    <span class="linea-hamburguesa"></span>
-    <span class="linea-hamburguesa"></span>
-    <span class="linea-hamburguesa"></span>
-</button>
-
-    <nav class="menu-navegacion">
-      <ul>
-        <li><a href="./home.html">Inicio</a></li>
-        <li><a href="./calendario.html">Calendario</a></li>
-        <li><a href="./clasificacion.html">Clasificación</a></li>
-        <li><a href="./chat.html">Chat</a></li>
-        <li><a href="./normas.html">Normas</a></li>
-        <li><a href="./perfil.html">Perfil</a></li>
-        <li><a id="link-admin" href="./admin.html" style="display: none;">Admin</a></li>
-        <li><a href="./index.html">Cerrar sesión</a></li>
-      </ul>
-    </nav>
-  </header>
-
-
-  <div id="mensaje-bienvenida" class="mensaje-bienvenida">
-    ¡Bienvenido a la mejor comunidad de Pádel, <span id="nombre-usuario"></span>!
-  </div>
-
-  <main id="contenido-principal" class="contenido-principal">
-     <section class="seccion-destacados">
-      <div class="proximo-partido card-destacada">
-        <h2>Próximo Partido</h2>
-        <div class="info-partido">
-          <div class="equipos">
-            <span class="equipo-local">Cargando...</span>
-            <span class="vs">VS</span>
-            <span class="equipo-visitante">Cargando...</span>
-          </div>
-          <div class="detalles-partido">
-            <p class="fecha">-</p>
-            
-          </div>
-        </div>
-      </div>
-      </section>
-      <hr>
-
-      <section class="seccion-destacados">
-      <div class="partidos-pendientes card-destacada">
-        <h2>Partidos Pendientes</h2>
-        <ul class="lista-partidos"></ul>
-      </div>
-    </section>
-    <hr>
-
-            <section class="seccion-tarjetas">
-
-            <h2>Compite y observa tus resultados</h2>
-
-            <div class="tarjetas">
-
-                <div class="tarjeta">
-                    <img src="./imagenes/158877-1920x1200-desktop-hd-tennis-wallpaper-image.jpg" alt="Torneos de pádel" width="400" height="400">
-                    <div class="contenido-tarjeta">
-                        <h3>Clasificación</h3>
-                        <p>Obseva los mejores equipos, puntos, victorias y derrotas, todo desde la clasificación</p><br><br>
-                        <a href="./clasificacion.html" class="boton-cta">Ir a clasificación</a>
-                        <div></div><br>
-                        <img src="./imagenes/chevron-down-svgrepo-com.svg" alt="flecha">
-                    </div>
+        <nav class="app-nav">
+          <a href="./home.html" class="nav-item active"><i class="fas fa-home"></i><span>Inicio</span></a>
+          <a href="./eventos.html" class="nav-item"><i class="fas fa-calendar-check"></i><span>Eventos</span></a>
+          <a href="./calendario.html" class="nav-item"><i class="fas fa-calendar-alt"></i><span>Calendario</span></a>
+          <a href="./clasificacion.html" class="nav-item"><i class="fas fa-trophy"></i><span>Clasificación</span></a>
+          <a href="./normas.html" class="nav-item"><i class="fas fa-gavel"></i><span>Normas</span></a>
+          <a href="./chat.html" class="nav-item"><i class="fas fa-comments"></i><span>Chat</span></a>
+          <a href="./simulador-visual-real.html" class="nav-item"><i class="fas fa-list-ol"></i><span>Ranking</span></a>
+          <a href="./admin.html" class="nav-item nav-admin" style="display:none"><i class="fas fa-user-shield"></i><span>Admin</span></a>
+          <a href="./perfil.html" class="nav-item"><i class="fas fa-user"></i><span>Perfil</span></a>
+          <a href="./notificaciones.html" class="nav-item"><i class="fas fa-bell"></i><span>Notificaciones</span></a>
+          <a href="index.html" class="nav-item nav-logout"><i class="fas fa-sign-out-alt"></i><span>Cerrar sesión</span></a>
+        </nav>
+    </header>
+    <main class="app-main">
+        <!-- Tarjeta de Bienvenida -->
+        <section class="welcome-card card">
+            <div class="user-greeting">
+                <h2>¡Bienvenido, <span id="username"></span>!</h2>
+                <div class="stats-filter-toggle">
+                    <button id="toggle-stats-liga" class="toggle-btn active" data-filter="liga">
+                        <i class="fas fa-trophy"></i>
+                        <span>Liga</span>
+                    </button>
+                    <button id="toggle-stats-amistosos" class="toggle-btn" data-filter="amistosos">
+                        <i class="fas fa-handshake"></i>
+                        <span>Amistosos</span>
+                    </button>
+                    <button id="toggle-stats-retos" class="toggle-btn" data-filter="retos">
+                        <i class="fas fa-crosshairs"></i>
+                        <span>Retos</span>
+                    </button>
+                    <button id="toggle-stats-torneos" class="toggle-btn" data-filter="torneos">
+                        <i class="fas fa-medal"></i>
+                        <span>Torneos</span>
+                    </button>
                 </div>
-
-                <div class="tarjeta">
-                    <img src="./imagenes/5c0e4dc8-3bc6-4692-9e73-47d471dcd846.webp" alt="Ranking de jugadores" width="400" height="400">
-                    <div class="contenido-tarjeta">
-                        <h3>Estadisticas</h3>
-                        <p>Observa tus estadisticas, crea partidos contra tus rivales y mucho más</p><br><br>
-                        <a href="./perfil.html" class="boton-cta">Ir a Mi Perfil</a>
-                        <div></div>
-                        <img src="./imagenes/chevron-down-svgrepo-com.svg" alt="flecha">
-                    </div>
-                </div>
-
-                <div class="tarjeta">
-                    <img src="./imagenes/Screenshot_20210512-180610_YouTube.jpg" alt="Comunidad de jugadores" width="400" height="400">
-                    <div class="contenido-tarjeta" >
-                        <h3>Habla con la Comunidad</h3>
-                        <p>Puedes caldear el ambiente antes de un partido o dejar cometarios respecto a dudas o situaciones de partido</p>
-                        <br><br>
-                        <a href="./chat.html" class="boton-cta">Ir al Chat</a>
-                        <div></div>
-                        <img src="./imagenes/chevron-down-svgrepo-com.svg" alt="flecha">
-                    </div>
-                </div>
-
+                <p class="ranking-status" id="ranking-status">Posición en la Clasificación: <span data-bind="ranking.position">-</span></p>
             </div>
-
+            <div class="quick-stats">
+                <div class="stat-item">
+                    <i class="fas fa-clipboard-check"></i>
+                    <span class="stat-value" data-bind="stats.points">0</span>
+                    <span class="stat-label">Partidos Jugados</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span class="stat-value" data-bind="stats.wins">0</span>
+                    <span class="stat-label">Victorias</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-percentage"></i>
+                    <span class="stat-value" data-bind="stats.winRate">0%</span>
+                    <span class="stat-label">Victorias-Derrotas</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-calendar-plus"></i>
+                    <span id="last-match-container">--</span>
+                    <span class="stat-label">Ultimo Partido</span>
+                </div>
+            </div>
         </section>
 
-  </main>
-  <script src="./js/menu-hamburguesa.js"></script>
-  <script type="module" src="./js/enlaceAdmin.js"></script>
+        <!-- Sección de Próximo Partido -->
+        <section class="next-match card">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-chevron-right"></i>
+                    Próximo Partido
+                </h2>
+                <div class="match-filter-toggle">
+                    <button id="toggle-match-filter" class="toggle-btn active" data-filter="mis-partidos">
+                        <i class="fas fa-user"></i>
+                        <span>Mis Partidos</span>
+                    </button>
+                    <button id="toggle-match-filter-all" class="toggle-btn" data-filter="todos-partidos">
+                        <i class="fas fa-users"></i>
+                        <span>Todos los Partidos</span>
+                    </button>
+                </div>
+            </div>
+            <div id="next-match">
+                <p class="no-matches">Cargando próximos partidos...</p>
+            </div>
+        </section>
 
-  <script>
-    // Mostrar mensaje 2 segundos, luego ocultar mensaje y mostrar contenido
-    window.onload = () => {
-      setTimeout(() => {
-        document.getElementById('mensaje-bienvenida').style.display = 'none';
-        document.getElementById('contenido-principal').style.display = 'block';
-      }, 2000);
-    }
-  </script>
+        <!-- Acciones Rápidas -->
+        <section class="quick-actions">
+            <div class="action-card challenge">
+                <i class="fas fa-plus-circle"></i>
+                <span>Nuevo Reto</span>
+            </div>
+            <div class="action-card results">
+                <i class="fas fa-clipboard-check"></i>
+                <span>Reportar Resultado</span>
+            </div>
+            <div class="action-card">
+                <i class="fas fa-bell"></i>
+                <span>Notificaciones</span>
+            </div>
+            <div class="action-card">
+                <i class="fas fa-users"></i>
+                <span>Buscar Jugador</span>
+            </div>
+        </section>
 
-<script type="module">
-  import { db, auth } from './js/firebase-config.js';
-  import {
-    collection,
-    getDocs,
-    doc,
-    getDoc,
-    query,
-    collectionGroup
-  } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
-  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
+        <!-- Lista de Partidos Pendientes -->
+        <section class="pending-matches card">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-list-ol"></i>
+                    Partidos Pendientes
+                </h2>
+                <div class="match-filter-toggle">
+                    <button id="toggle-pending-filter" class="toggle-btn active" data-filter="mis-partidos">
+                        <i class="fas fa-user"></i>
+                        <span>Mis Partidos</span>
+                    </button>
+                    <button id="toggle-pending-filter-all" class="toggle-btn" data-filter="todos-partidos">
+                        <i class="fas fa-users"></i>
+                        <span>Todos los Partidos</span>
+                    </button>
+                </div>
+            </div>
+            <div id="upcoming-matches-list">
+                <p class="no-matches">Cargando partidos pendientes...</p>
+            </div>
+        </section>
+    </main>
+    <script src="./js/menu-hamburguesa.js"></script>
+    <script type="module" src="./js/enlaceAdmin.js"></script>
+    <script type="module" src="./js/todoenuno.js"></script>
 
-  async function cargarPartidosPendientes() {
-    const ahora = new Date();
-    const pendientes = [];
-
-    const snapshot = await getDocs(collection(db, "calendario"));
-
-    for (const jornadaDoc of snapshot.docs) {
-      const partidosSnap = await getDocs(collection(db, `calendario/${jornadaDoc.id}/partidos`));
-
-      partidosSnap.forEach(partidoDoc => {
-        const data = partidoDoc.data();
-        const fecha = data.fecha?.toDate?.();
-
-        // Solo incluir partidos pendientes con fecha futura
-        if (!data.resultado && fecha && fecha > ahora) {
-          pendientes.push({
-            id: partidoDoc.id,
-            jornadaId: jornadaDoc.id,
-            ...data,
-            fecha
-          });
-        }
-      });
-    }
-
-    // Ordenar por fecha más próxima
-    pendientes.sort((a, b) => a.fecha - b.fecha);
-
-    // Obtener nombres de equipos
-    const partidosConNombres = await Promise.all(pendientes.map(async partido => {
-      const [localSnap, visitanteSnap] = await Promise.all([
-        getDoc(doc(db, "equipos", partido.equipoLocal)),
-        getDoc(doc(db, "equipos", partido.equipoVisitante))
-      ]);
-
-      return {
-        ...partido,
-        localNombre: localSnap.data()?.nombre || 'Equipo desconocido',
-        visitanteNombre: visitanteSnap.data()?.nombre || 'Equipo desconocido'
-      };
-    }));
-
-    actualizarUI(partidosConNombres);
-  }
-
-  function actualizarUI(partidos) {
-    const listaPartidos = document.querySelector('.lista-partidos');
-    listaPartidos.innerHTML = '';
-
-    if (partidos.length === 0) {
-      listaPartidos.innerHTML = '<p class="sin-partidos">No hay partidos programados</p>';
-      return;
-    }
-
-    // Mostrar el próximo partido
-    const proximo = partidos[0];
-    document.querySelector('.equipo-local').textContent = proximo.localNombre;
-    document.querySelector('.equipo-visitante').textContent = proximo.visitanteNombre;
-    document.querySelector('.fecha').textContent = proximo.fecha.toLocaleDateString('es-ES', {
-      weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit'
-    });
-
-    // Mostrar el resto de partidos
-    partidos.slice(1).forEach(partido => {
-      const li = document.createElement('li');
-      li.className = 'partido-item';
-      li.innerHTML = `
-        <span class="equipos">${partido.localNombre} vs ${partido.visitanteNombre}</span>
-        <span class="fecha">${partido.fecha.toLocaleDateString('es-ES', {
-          day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit'
-        })}</span>
-      `;
-      listaPartidos.appendChild(li);
-    });
-  }
-
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      cargarPartidosPendientes();
-
-      // Cargar nombre del usuario (opcional)
-      getDoc(doc(db, 'usuarios', user.uid)).then(docSnap => {
-        if (docSnap.exists()) {
-          const nombre = docSnap.data().nombreUsuario;
-          document.querySelector('.contenido-bienvenida h1').innerHTML += 
-            `, <span class="nombre-usuario">${nombre}</span>`;
-        }
-      });
-    }
-  });
-</script>
-
+    <script type="module" src="./js/usuario-session.js"></script>
 </body>
 </html>

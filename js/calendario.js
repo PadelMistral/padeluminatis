@@ -10,7 +10,7 @@ import {
   Timestamp,
   deleteDoc
 } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
+import { onAuthStateChanged, getAuth } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
 
 const listaJornadas = document.getElementById("lista-jornadas");
 let usuarioActual = null;
@@ -261,24 +261,63 @@ async function guardarCambios(jornadaId, partidoId, datos) {
   }
 }
 
-onAuthStateChanged(auth, async (user) => {
-  try {
-    if (user) {
-      const userDoc = await getDoc(doc(db, "usuarios", user.uid));
-      if (!userDoc.exists()) throw new Error("Usuario no registrado");
+async function cargarEventosUsuarioCalendario() {
+  const auth = getAuth();
+  const user = auth.currentUser;
+  if (!user) return [];
+  const eventosSnap = await getDocs(collection(db, 'eventos'));
+  return eventosSnap.docs
+    .filter(doc => (doc.data().participants || []).some(p => p.id === user.uid))
+    .map(doc => ({ id: doc.id, nombre: doc.data().name }));
+}
 
-      usuarioActual = {
-        ...user,
-        rol: userDoc.data().rol || 'usuario'
-      };
+async function rellenarSelectEventosCalendario() {
+  const select = document.getElementById('select-evento-liga');
+  if (!select) return;
+  select.innerHTML = '<option value="">Selecciona un evento</option>';
+  const eventos = await cargarEventosUsuarioCalendario();
+  eventos.forEach(ev => {
+    const opt = document.createElement('option');
+    opt.value = ev.id;
+    opt.textContent = ev.nombre;
+    select.appendChild(opt);
+  });
+}
 
-      cargarCalendario();
-    } else {
+document.addEventListener('DOMContentLoaded', async () => {
+  await rellenarSelectEventosCalendario();
+  onAuthStateChanged(auth, async (user) => {
+    try {
+      if (user) {
+        const userDoc = await getDoc(doc(db, "usuarios", user.uid));
+        if (!userDoc.exists()) throw new Error("Usuario no registrado");
+
+        usuarioActual = {
+          ...user,
+          rol: userDoc.data().rol || 'usuario'
+        };
+
+        cargarCalendario();
+      } else {
+        window.location.href = "index.html";
+      }
+    } catch (error) {
+      console.error("Error de autenticación:", error);
+      auth.signOut();
       window.location.href = "index.html";
     }
-  } catch (error) {
-    console.error("Error de autenticación:", error);
-    auth.signOut();
-    window.location.href = "index.html";
-  }
+  });
 });
+
+// Al crear el partido, guardar el eventoId
+const formCrearPartidoLiga = document.getElementById('form-crear-partido-liga');
+if (formCrearPartidoLiga) {
+  formCrearPartidoLiga.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const eventoId = document.getElementById('select-evento-liga').value;
+    // ... lógica existente para crear partido ...
+    // Cuando guardes el partido en Firestore, añade el campo eventoId
+    // Ejemplo:
+    // await addDoc(collection(db, `calendario/${jornadaId}/partidos`), { ...datosPartido, eventoId });
+  });
+}

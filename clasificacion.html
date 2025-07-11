@@ -1,53 +1,66 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clasificación - Liga de Pádel</title>
-  <link rel="stylesheet" href="./css/clasificacion.css">
-  <link rel="stylesheet" href="./css/estilo.css">
-  <link rel="shortcut icon" href="./imagenes/Logojafs.png" type="image/x-icon">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0A2342">
+    <title>Clasificación - Padeluminatis</title>
+    <link rel="icon" type="image/x-icon" href="./imagenes/Logojafs.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./css/header.css">
+    <link rel="stylesheet" href="./css/clasificacion.css">
 </head>
-<body class="pagina-principal">
-  <header class="encabezado">
-               <div class="logo">
-            <img src="./imagenes/Logojafs.png" alt="Logo de JafsPadel League" width="100" height="100">
+<body class="app-body">
+    <header class="app-header">
+        <div class="header-content">
+            <img src="./imagenes/Logojafs.png" alt="Logo" class="app-logo">
+            <h1 class="app-title">Clasificación - Padeluminatis</h1>
+            <button class="menu-toggle" aria-label="Menú">
+                <i class="fas fa-bars"></i>
+            </button>
         </div>
-    <h1 class="titulo">Clasificación</h1>
-
-<button class="menu-hamburguesa" 
-        aria-label="Menú principal"
-        aria-expanded="false"
-        aria-controls="menu-navegacion">
-    <span class="linea-hamburguesa"></span>
-    <span class="linea-hamburguesa"></span>
-    <span class="linea-hamburguesa"></span>
-</button>
-    <nav class="menu-navegacion">
-      <ul>
-        <li><a href="./home.html">Inicio</a></li>
-        <li><a href="./calendario.html">Calendario</a></li>
-        <li><a href="./clasificacion.html">Clasificación</a></li>
-        <li><a href="./chat.html">Chat</a></li>
-        <li><a href="./normas.html">Normas</a></li>
-        <li><a href="./perfil.html">Perfil</a></li>
-        <li><a id="link-admin" href="./admin.html" style="display: none;">Admin</a></li>
-        <li><a href="./index.html">Cerrar sesión</a></li>
-      </ul>
-    </nav>
-  </header>
-
-  <main class="contenido-principal">
-     <script type="module" src="./js/clasificacion.js"></script>
-
-
-<h1>Clasificacion General</h1>
-  
-  <div class="tabla-responsive-wrapper">
-  <table id="tabla-clasificacion"></table>
-  </div>
-  </main>
-  <script src="./js/menu-hamburguesa.js"></script>
-  <script type="module" src="./js/enlaceAdmin.js"></script>
+        <nav class="app-nav">
+          <a href="./home.html" class="nav-item"><i class="fas fa-home"></i><span>Inicio</span></a>
+          <a href="./eventos.html" class="nav-item"><i class="fas fa-calendar-check"></i><span>Eventos</span></a>
+          <a href="./calendario.html" class="nav-item"><i class="fas fa-calendar-alt"></i><span>Calendario</span></a>
+          <a href="./clasificacion.html" class="nav-item active"><i class="fas fa-trophy"></i><span>Clasificación</span></a>
+          <a href="./normas.html" class="nav-item"><i class="fas fa-gavel"></i><span>Normas</span></a>
+          <a href="./chat.html" class="nav-item"><i class="fas fa-comments"></i><span>Chat</span></a>
+          <a href="./ranking.html" class="nav-item"><i class="fas fa-list-ol"></i><span>Ranking</span></a>
+          <a href="./admin.html" class="nav-item nav-admin" style="display:none"><i class="fas fa-user-shield"></i><span>Admin</span></a>
+          <a href="./perfil.html" class="nav-item"><i class="fas fa-user"></i><span>Perfil</span></a>
+          <a href="./notificaciones.html" class="nav-item"><i class="fas fa-bell"></i><span>Notificaciones</span></a>
+          <a href="#" class="nav-item nav-logout"><i class="fas fa-sign-out-alt"></i><span>Cerrar sesión</span></a>
+        </nav>
+    </header>
+    <main class="app-main">
+      <div class="fondo-clasificacion-local"></div>
+      <div style="margin-bottom: 1.5rem; text-align:center;">
+        <label for="select-evento" style="font-weight:600; color:#bfa13a; margin-right:0.7em;">Selecciona evento:</label>
+        <select id="select-evento" style="padding:0.4em 1.2em; border-radius:8px; font-size:1.1em;"></select>
+      </div>
+      <div class="tabla-responsive-wrapper">
+        <table id="tabla-clasificacion" class="tabla-clasificacion">
+          <thead>
+            <tr>
+              <th>Pos</th>
+              <th>Equipo</th>
+              <th>PJ</th>
+              <th>PG / PP</th>
+              <th>Dif.</th>
+              <th style="text-align: center;">Puntos</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- El JS rellenará aquí -->
+          </tbody>
+        </table>
+      </div>
+    </main>
+    <script type="module" src="./js/usuario-session.js"></script>
+    <script type="module" src="./js/clasificacion.js"></script>
+    <script type="module" src="./js/enlaceAdmin.js"></script>
+    <script src="./js/menu-hamburguesa.js"></script>
+    <script type="module" src="./js/particles-init.js"></script>
 </body>
 </html>

@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Simulación Partidos Reales</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f9fbfd; }
+    .container { max-width: 1200px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .btn { background: #3498db; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin: 5px; }
+    .btn:hover { background: #2980b9; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+    th { background-color: #3498db; color: white; }
+    .partidos-container { max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius: 8px; padding: 10px; margin: 20px 0; }
+    .partido-item { background: #f8f9fa; margin: 5px 0; padding: 10px; border-radius: 5px; border-left: 4px solid #3498db; }
+    .loading { text-align: center; padding: 20px; color: #7f8c8d; }
+    canvas { margin-top: 30px; }
+    
+    .partido-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    
+    .fecha {
+      font-weight: bold;
+      color: #2c3e50;
+    }
+    
+    .tipo {
+      background: #3498db;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.8em;
+    }
+    
+    .partido-equipos {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 10px 0;
+    }
+    
+    .equipo {
+      flex: 1;
+      text-align: center;
+      padding: 10px;
+      border-radius: 6px;
+      background: #ecf0f1;
+    }
+    
+    .equipo.ganador {
+      background: #d5f4e6;
+      border: 2px solid #27ae60;
+    }
+    
+    .jugadores {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-bottom: 8px;
+    }
+    
+    .jugador {
+      font-size: 0.9em;
+      color: #2c3e50;
+    }
+    
+    .resultado {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #e74c3c;
+    }
+    
+    .vs {
+      margin: 0 15px;
+      font-weight: bold;
+      color: #7f8c8d;
+    }
+    
+    .partido-detalle {
+      text-align: center;
+      margin-top: 10px;
+      color: #7f8c8d;
+    }
+    
+    .puntos-detalle {
+      margin-top: 15px;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 6px;
+      border-left: 3px solid #3498db;
+    }
+    
+    .punto-jugador {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 5px 0;
+      padding: 5px;
+      background: white;
+      border-radius: 4px;
+    }
+    
+    .jugador-nombre {
+      font-weight: bold;
+      color: #2c3e50;
+    }
+    
+    .punto-valor {
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+    
+    .punto-detalle {
+      font-size: 0.8em;
+      color: #7f8c8d;
+    }
+    
+    .puntos-partido {
+      margin: 15px 0;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 6px;
+      border-left: 3px solid #27ae60;
+    }
+    
+    .punto-progreso {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 5px 0;
+      padding: 5px;
+      background: white;
+      border-radius: 4px;
+    }
+    
+    .jugador-progreso {
+      font-weight: bold;
+      color: #2c3e50;
+    }
+    
+    .punto-progreso-valor {
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+    
+    .posicion-progreso {
+      font-size: 0.8em;
+      color: #7f8c8d;
+    }
+    
+    .ranking-actual {
+      margin: 15px 0;
+      padding: 10px;
+      background: #ecf0f1;
+      border-radius: 6px;
+      border-left: 3px solid #3498db;
+    }
+    
+    .ranking-actual ol {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+    
+    .ranking-actual li {
+      margin: 5px 0;
+      font-weight: bold;
+    }
+    
+    .no-partidos {
+      text-align: center;
+      padding: 40px 20px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      border: 2px dashed #dee2e6;
+      margin: 20px 0;
+    }
+    
+    .no-partidos h3 {
+      color: #dc3545;
+      margin-bottom: 20px;
+    }
+    
+    .no-partidos ul {
+      text-align: left;
+      max-width: 500px;
+      margin: 20px auto;
+    }
+    
+    .no-partidos li {
+      margin: 10px 0;
+      color: #6c757d;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>🎾 Simulación Partidos Reales - Sistema Cuántico</h1>
+  <button class="btn" onclick="cargarYSimular()">🔄 Cargar y Simular Partidos Reales</button>
+  <button class="btn" onclick="resetearSimulacion()">🔄 Resetear</button>
+  
+  <div id="stats" style="display: none;">
+    <h3>📊 Estadísticas del Sistema</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 15px 0;">
+      <div style="background: #f8f9fa; padding: 10px; border-radius: 5px; border-left: 3px solid #3498db;">
+        <strong>Total partidos:</strong> <span id="total-partidos">0</span>
+      </div>
+      <div style="background: #f8f9fa; padding: 10px; border-radius: 5px; border-left: 3px solid #27ae60;">
+        <strong>Usuarios activos:</strong> <span id="usuarios-activos">0</span>
+      </div>
+      <div style="background: #f8f9fa; padding: 10px; border-radius: 5px; border-left: 3px solid #e74c3c;">
+        <strong>Rating promedio:</strong> <span id="rating-promedio">500</span>
+      </div>
+      <div style="background: #f8f9fa; padding: 10px; border-radius: 5px; border-left: 3px solid #f39c12;">
+        <strong>Nivel promedio:</strong> <span id="nivel-promedio">2.0</span>
+      </div>
+    </div>
+    <div style="background: #ecf0f1; padding: 15px; border-radius: 8px; margin: 15px 0;">
+      <h4>🎯 Sistema Cuántico Ajustado - VICTORIA FIJA + VARIABLES INDIVIDUALES</h4>
+      <p><strong>Lógica del sistema:</strong></p>
+      <ol style="margin-bottom: 15px;">
+        <li><strong>Nivel del partido:</strong> Se determina por la media de los equipos (reñido, normal, difícil, épico)</li>
+        <li><strong>Victoria/Derrota base:</strong> Puntuación fija según nivel del partido (7-16 pts victoria, -7 a -14 pts derrota)</li>
+        <li><strong>Multiplicador por diferencia:</strong> Basado en marcador real (6-0, 6-0 = 1.45x, partido ajustado = 1.05x)</li>
+        <li><strong>Variables individuales:</strong> Se suman todas y se dividen entre 2.5 (media ajustada)</li>
+        <li><strong>Puntuación final:</strong> Base × Multiplicador + Media de variables + Variación aleatoria (±0.4)</li>
+      </ol>
+      
+      <p><strong>Tipos de partido según nivel:</strong></p>
+      <ul style="columns: 2; column-gap: 20px; margin-bottom: 15px;">
+        <li>🏆 <strong>Reñido:</strong> Equipos similares (8.5 pts victoria, -14.2 pts derrota)</li>
+        <li>⚔️ <strong>Normal:</strong> Diferencia moderada (7.2 pts victoria, -12.8 pts derrota)</li>
+        <li>🔥 <strong>Difícil:</strong> Diferencia significativa (11.8 pts victoria, -10.5 pts derrota)</li>
+        <li>💎 <strong>Épico:</strong> Diferencia muy grande (16.4 pts victoria, -7.3 pts derrota)</li>
+      </ul>
+      
+      <p><strong>Variables individuales (suma/2.5):</strong></p>
+      <ul style="columns: 2; column-gap: 20px;">
+        <li>📊 Marcador (1.5-5.8 pts)</li>
+        <li>🔥 Dificultad rivales (1.8-4.2 pts)</li>
+        <li>👑 Nivel compañero (0.8-2.8 pts)</li>
+        <li>🏅 Tipo partido (0.8-2.2 pts)</li>
+        <li>🎯 Posición ranking (0.8-2.2 pts)</li>
+        <li>🎓 Experiencia (0.5-1.8 pts)</li>
+        <li>📈 Racha (0.5-1.5 pts)</li>
+        <li>🎯 Consistencia (0.3-0.8 pts)</li>
+        <li>💪 Intensidad (0.4-1.2 pts)</li>
+        <li>🎯 Clutch (0.3-1.5 pts)</li>
+      </ul>
+      
+      <p style="margin-top: 10px; font-weight: bold; color: #e74c3c;">
+        🎯 <strong>SISTEMA AJUSTADO:</strong> Victoria fija según nivel + variables individuales que diferencian a cada jugador.
+        Partido reñido: ~8-12 pts, Partido normal: ~7-10 pts, Partido difícil: ~12-16 pts, Partido épico: ~16-22 pts.
+        <br>Derrotas penalizan más: -7 a -18 pts según dificultad.
+      </p>
+    </div>
+  </div>
+  
+  <div id="partidos-container" class="partidos-container">
+    <div class="loading">Haz clic en "Cargar y Simular" para comenzar</div>
+  </div>
+  
+  <h2>📈 Ranking Final Simulado</h2>
+  <div id="ranking"></div>
+  
+  <canvas id="chart" height="100"></canvas>
+</div>
+
+<script type="module">
+import { db } from './js/firebase-config.js';
+import { collection, getDocs } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
+
+let jugadores = [];
+let partidosSimulados = [];
+let chart;
+
+// Función para cargar usuarios reales - todos empiezan con 500 puntos
+async function cargarUsuarios() {
+  const usuariosSnap = await getDocs(collection(db, "usuarios"));
+  jugadores = usuariosSnap.docs.map(doc => {
+    const data = doc.data();
+    return {
+      id: doc.id,
+      nombre: data.nombreUsuario || data.displayName || 'Sin nombre',
+      nivel: parseFloat(data.nivel) || 2.0,
+      rating: 500, // Todos empiezan con 500 puntos
+      historial: [500], // Historial inicial
+      partidosJugados: 0,
+      victorias: 0
+    };
+  });
+  return jugadores;
+}
+
+// Función para cargar equipos
+async function cargarEquipos() {
+  const equiposSnap = await getDocs(collection(db, "equipos"));
+  const equipos = {};
+  equiposSnap.docs.forEach(doc => {
+    const data = doc.data();
+    equipos[doc.id] = {
+      id: doc.id,
+      nombre: data.nombre || `Equipo ${doc.id}`,
+      jugadores: data.jugadores || []
+    };
+  });
+  return equipos;
+}
+
+// Función para obtener partidos del calendario
+async function obtenerPartidosCalendario() {
+  const partidos = [];
+  
+  try {
+    console.log('🔍 Buscando partidos en Firebase...');
+    
+    // Obtener partidos de liga
+    console.log('📅 Buscando partidos de liga...');
+    const calendarioSnap = await getDocs(collection(db, "calendario"));
+    console.log(`Encontradas ${calendarioSnap.docs.length} jornadas`);
+    
+    for (const jornadaDoc of calendarioSnap.docs) {
+      console.log(`📋 Procesando jornada: ${jornadaDoc.id}`);
+      const partidosSnap = await getDocs(collection(db, `calendario/${jornadaDoc.id}/partidos`));
+      console.log(`  - ${partidosSnap.docs.length} partidos en esta jornada`);
+      
+      for (const partidoDoc of partidosSnap.docs) {
+        const partido = partidoDoc.data();
+        console.log(`  - Partido ${partidoDoc.id}:`, partido);
+        
+        // Verificar si tiene resultado válido
+        if (partido.resultado && partido.resultado.set1) {
+          console.log(`  ✅ Partido válido encontrado: ${partidoDoc.id}`);
+          partidos.push({
+            ...partido,
+            id: partidoDoc.id,
+            jornadaId: jornadaDoc.id,
+            tipo: 'liga',
+            fecha: partido.fecha?.toDate() || new Date(),
+            equipoLocalId: partido.equipoLocal,
+            equipoVisitanteId: partido.equipoVisitante
+          });
+        } else {
+          console.log(`  ❌ Partido sin resultado válido: ${partidoDoc.id}`);
+        }
+      }
+    }
+
+    // Obtener partidos amistosos
+    console.log('🤝 Buscando partidos amistosos...');
+    const amistososSnap = await getDocs(collection(db, "partidosAmistosos"));
+    console.log(`Encontrados ${amistososSnap.docs.length} partidos amistosos`);
+    
+    amistososSnap.docs.forEach(doc => {
+      const partido = doc.data();
+      console.log(`  - Amistoso ${doc.id}:`, partido);
+      
+      if (partido.resultado && partido.resultado.set1) {
+        console.log(`  ✅ Amistoso válido encontrado: ${doc.id}`);
+        partidos.push({
+          ...partido,
+          id: doc.id,
+          tipo: 'amistoso',
+          fecha: partido.fecha?.toDate() || new Date(),
+          jugadores: partido.jugadores || []
+        });
+      } else {
+        console.log(`  ❌ Amistoso sin resultado válido: ${doc.id}`);
+      }
+    });
+
+    // Obtener partidos de reto
+    console.log('⚔️ Buscando partidos de reto...');
+    const retosSnap = await getDocs(collection(db, "partidosReto"));
+    console.log(`Encontrados ${retosSnap.docs.length} partidos de reto`);
+    
+    retosSnap.docs.forEach(doc => {
+      const partido = doc.data();
+      console.log(`  - Reto ${doc.id}:`, partido);
+      
+      if (partido.resultado && partido.resultado.set1) {
+        console.log(`  ✅ Reto válido encontrado: ${doc.id}`);
+        partidos.push({
+          ...partido,
+          id: doc.id,
+          tipo: 'reto',
+          fecha: partido.fecha?.toDate() || new Date(),
+          jugadores: partido.jugadores || []
+        });
+      } else {
+        console.log(`  ❌ Reto sin resultado válido: ${doc.id}`);
+      }
+    });
+
+    console.log(`📊 Total de partidos válidos encontrados: ${partidos.length}`);
+    
+    // Ordenar por fecha (más antiguos primero)
+    const partidosOrdenados = partidos.sort((a, b) => a.fecha - b.fecha);
+    console.log('📅 Partidos ordenados por fecha:', partidosOrdenados.map(p => ({
+      id: p.id,
+      tipo: p.tipo,
+      fecha: p.fecha.toLocaleDateString('es-ES'),
+      resultado: p.resultado
+    })));
+    
+    return partidosOrdenados;
+  } catch (error) {
+    console.error('❌ Error obteniendo partidos:', error);
+    return [];
+  }
+}
+
+// Función para obtener jugadores de un equipo
+function obtenerJugadoresEquipo(equipoId, equipos) {
+  const equipo = equipos[equipoId];
+  if (!equipo || !equipo.jugadores) return [];
+  
+  return equipo.jugadores.map(jugadorId => {
+    const jugador = jugadores.find(j => j.id === jugadorId);
+    return jugador || { id: jugadorId, nombre: 'Jugador Desconocido', nivel: 2.0, rating: 500 };
+  });
+}
+
+// Función para procesar resultado de partido
+function procesarResultado(resultado) {
+  if (!resultado || !resultado.set1) return null;
+  
+  const set1 = resultado.set1;
+  const set2 = resultado.set2 || { puntos1: 0, puntos2: 0 };
+  const set3 = resultado.set3 || { puntos1: 0, puntos2: 0 };
+  
+  let setsGanadosLocal = 0;
+  let setsGanadosVisitante = 0;
+  let juegosLocal = 0;
+  let juegosVisitante = 0;
+  
+  // Procesar set 1
+  if (set1.puntos1 > set1.puntos2) {
+    setsGanadosLocal++;
+  } else {
+    setsGanadosVisitante++;
+  }
+  juegosLocal += set1.puntos1;
+  juegosVisitante += set1.puntos2;
+  
+  // Procesar set 2
+  if (set2.puntos1 > set2.puntos2) {
+    setsGanadosLocal++;
+  } else {
+    setsGanadosVisitante++;
+  }
+  juegosLocal += set2.puntos1;
+  juegosVisitante += set2.puntos2;
+  
+  // Procesar set 3 si es necesario
+  if (set3.puntos1 > 0 || set3.puntos2 > 0) {
+    if (set3.puntos1 > set3.puntos2) {
+      setsGanadosLocal++;
+    } else {
+      setsGanadosVisitante++;
+    }
+    juegosLocal += set3.puntos1;
+    juegosVisitante += set3.puntos2;
+  }
+  
+  return {
+    setsLocal: setsGanadosLocal,
+    setsVisitante: setsGanadosVisitante,
+    juegosLocal: juegosLocal,
+    juegosVisitante: juegosVisitante,
+    ganador: setsGanadosLocal > setsGanadosVisitante ? 'local' : 'visitante'
+  };
+}
+
+// Función helper para validar números
+function validarNumero(valor, valorPorDefecto = 0) {
+  if (typeof valor !== 'number' || isNaN(valor) || !isFinite(valor)) {
+    return valorPorDefecto;
+  }
+  return valor;
+}
+
+// Función para simular partido con lógica matemática de evento.html
+function simularPartido(partido, equipos) {
+  const resultado = procesarResultado(partido.resultado);
+  if (!resultado) return null;
+  
+  // Determinar jugadores según tipo de partido
+  let jugadoresLocal = [];
+  let jugadoresVisitante = [];
+  
+  if (partido.tipo === 'liga') {
+    jugadoresLocal = obtenerJugadoresEquipo(partido.equipoLocalId, equipos);
+    jugadoresVisitante = obtenerJugadoresEquipo(partido.equipoVisitanteId, equipos);
+  } else {
+    if (partido.jugadores && partido.jugadores.length >= 4) {
+      jugadoresLocal = partido.jugadores.slice(0, 2).map(jugadorId => {
+        const jugador = jugadores.find(j => j.id === jugadorId);
+        return jugador || { id: jugadorId, nombre: 'Jugador Desconocido', nivel: 2.0, rating: 500 };
+      });
+      jugadoresVisitante = partido.jugadores.slice(2, 4).map(jugadorId => {
+        const jugador = jugadores.find(j => j.id === jugadorId);
+        return jugador || { id: jugadorId, nombre: 'Jugador Desconocido', nivel: 2.0, rating: 500 };
+      });
+    } else {
+      jugadoresLocal = jugadores.slice(0, 2);
+      jugadoresVisitante = jugadores.slice(2, 4);
+    }
+  }
+  
+  if (jugadoresLocal.length < 2) jugadoresLocal = jugadores.slice(0, 2);
+  if (jugadoresVisitante.length < 2) jugadoresVisitante = jugadores.slice(2, 4);
+  
+  const A1 = jugadoresLocal[0];
+  const A2 = jugadoresLocal[1];
+  const B1 = jugadoresVisitante[0];
+  const B2 = jugadoresVisitante[1];
+  
+  // Calcular posición actual
+  const rankingActual = [...jugadores].sort((a,b) => b.rating - a.rating);
+  const posiciones = {};
+  rankingActual.forEach((jug, index) => {
+    posiciones[jug.id] = index + 1;
+  });
+  
+  const cambiosJugadores = [];
+  
+  // Función para calcular puntos según la lógica cuántica mejorada - PREMIANDO NIVEL REAL
+  function calcularPuntosEvento(setsGanados, setsPerdidos, puntosEquipo, puntosRival, tipo, jugador, comp, rivales, resultado) {
+    const base = 30;
+    const diferencia = puntosRival - puntosEquipo;
+    const factorDificultad = diferencia > 0 ? 1 + (diferencia / 1000) : 1 - (Math.abs(diferencia) / 1500);
+    const margen = Math.abs(setsGanados - setsPerdidos);
+    const factorMargen = margen >= 2 ? 1.2 : margen === 1 ? 1.0 : 0.8;
+    const factorTipo = tipo === 'amistoso' ? 0.8 : tipo === 'reto' ? 1.2 : tipo === 'evento' ? 1.5 : 1;
+    
+    // Cálculo base
+    let puntosBase = Math.round(base * factorDificultad * factorMargen * factorTipo);
+    
+    // SISTEMA CUÁNTICO REALISTA - VICTORIA/DERROTA FIJA + VARIABLES INDIVIDUALES
+    
+    // 1. DETERMINAR NIVEL DEL PARTIDO (basado en media de equipos)
+    const nivelPromedioEquipo = (jugador.nivel + comp.nivel) / 2;
+    const nivelPromedioRivales = (rivales[0].nivel + rivales[1].nivel) / 2;
+    const nivelPromedioPartido = (nivelPromedioEquipo + nivelPromedioRivales) / 2;
+    
+    // 2. DETERMINAR TIPO DE PARTIDO (fácil, reñido, difícil, épico)
+    const diferenciaEquipos = Math.abs(nivelPromedioEquipo - nivelPromedioRivales);
+    let tipoPartido = '';
+    let multiplicadorNivel = 1;
+    
+    if (diferenciaEquipos < 0.2) {
+      tipoPartido = 'reñido'; // Equipos de nivel similar
+      multiplicadorNivel = 1.2; // Bonus por partido competitivo
+    } else if (diferenciaEquipos < 0.5) {
+      tipoPartido = 'normal'; // Equipos con diferencia moderada
+      multiplicadorNivel = 1.0;
+    } else if (diferenciaEquipos < 0.8) {
+      tipoPartido = 'difícil'; // Diferencia significativa
+      multiplicadorNivel = 1.3; // Bonus por dificultad
+    } else {
+      tipoPartido = 'épico'; // Diferencia muy grande
+      multiplicadorNivel = 1.5; // Máximo bonus
+    }
+    
+    // 3. FACTOR BASE: VICTORIA/DERROTA FIJA según nivel del partido (AJUSTADO)
+    const esGanador = setsGanados > setsPerdidos;
+    let factorBase = 0;
+    
+    if (esGanador) {
+      switch (tipoPartido) {
+        case 'reñido': factorBase = 8.5; break;
+        case 'normal': factorBase = 7.2; break;
+        case 'difícil': factorBase = 11.8; break;
+        case 'épico': factorBase = 16.4; break;
+        default: factorBase = 7.2;
+      }
+    } else {
+      switch (tipoPartido) {
+        case 'reñido': factorBase = -14.2; break;
+        case 'normal': factorBase = -12.8; break;
+        case 'difícil': factorBase = -10.5; break;
+        case 'épico': factorBase = -7.3; break;
+        default: factorBase = -12.8;
+      }
+    }
+    
+    // 4. FACTOR DIFERENCIA DE PUNTOS (multiplicador basado en marcador - AJUSTADO)
+    const juegosLocal = resultado.juegosLocal || 0;
+    const juegosVisitante = resultado.juegosVisitante || 0;
+    const diffJuegos = Math.abs(juegosLocal - juegosVisitante);
+    const totalJuegos = juegosLocal + juegosVisitante;
+    
+    let factorDiferencia = 1.0;
+    if (esGanador) {
+      if (diffJuegos >= 12) factorDiferencia = 1.45; // Victoria aplastante (6-0, 6-0)
+      else if (diffJuegos >= 8) factorDiferencia = 1.32; // Victoria dominante
+      else if (diffJuegos >= 4) factorDiferencia = 1.18; // Victoria clara
+      else factorDiferencia = 1.05; // Victoria ajustada
+    } else {
+      if (diffJuegos >= 12) factorDiferencia = 1.65; // Derrota aplastante
+      else if (diffJuegos >= 8) factorDiferencia = 1.48; // Derrota dominante
+      else if (diffJuegos >= 4) factorDiferencia = 1.25; // Derrota clara
+      else factorDiferencia = 1.08; // Derrota ajustada
+    }
+    
+    console.log(`🎯 Factor Base para ${jugador.nombre}: ${factorBase} (${tipoPartido}, esGanador: ${esGanador}, diferencia: ${diffJuegos} juegos)`);
+    
+    // 5. VARIABLES INDIVIDUALES (se suman y dividen entre 2)
+    
+    // 5.1 FACTOR MARCADOR (1.5-5.8 puntos - AJUSTADO)
+    let factorMarcador = 0;
+    if (esGanador) {
+      if (diffJuegos >= 12) factorMarcador = 5.8; // Victoria aplastante
+      else if (diffJuegos >= 8) factorMarcador = 4.2; // Victoria dominante
+      else if (diffJuegos >= 4) factorMarcador = 2.8; // Victoria clara
+      else factorMarcador = 1.5; // Victoria ajustada
+    } else {
+      if (diffJuegos >= 12) factorMarcador = -4.5; // Derrota aplastante
+      else if (diffJuegos >= 8) factorMarcador = -3.2; // Derrota dominante
+      else if (diffJuegos >= 4) factorMarcador = -1.8; // Derrota clara
+      else factorMarcador = -0.8; // Derrota ajustada
+    }
+    
+    // 5.2 FACTOR DIFICULTAD RIVALES (1.8-4.2 puntos - AJUSTADO)
+    const diffRivales = nivelPromedioRivales - jugador.nivel;
+    let factorDificultadRivales = 0;
+    
+    if (diffRivales > 0.5) factorDificultadRivales = 4.2; // Rivales muy superiores
+    else if (diffRivales > 0.2) factorDificultadRivales = 2.8; // Rivales superiores
+    else if (diffRivales > 0) factorDificultadRivales = 1.5; // Rivales ligeramente superiores
+    else if (diffRivales < -0.5) factorDificultadRivales = -3.2; // Rivales muy inferiores
+    else if (diffRivales < -0.2) factorDificultadRivales = -1.8; // Rivales inferiores
+    else factorDificultadRivales = 0; // Rivales equilibrados
+    
+    // 5.3 FACTOR NIVEL COMPAÑERO (0.8-2.8 puntos - AJUSTADO) - Premia al jugador con más nivel
+    const diffCompanero = jugador.nivel - comp.nivel;
+    let factorNivelCompanero = 0;
+    
+    if (diffCompanero > 0.3) factorNivelCompanero = 2.8; // Jugador muy superior al compañero
+    else if (diffCompanero > 0.1) factorNivelCompanero = 1.5; // Jugador superior al compañero
+    else if (diffCompanero < -0.3) factorNivelCompanero = -2.2; // Jugador muy inferior al compañero
+    else if (diffCompanero < -0.1) factorNivelCompanero = -0.8; // Jugador inferior al compañero
+    else factorNivelCompanero = 0; // Niveles equilibrados
+    
+    // 5.4 FACTOR TIPO PARTIDO (0.8-2.2 puntos - AJUSTADO)
+    let factorTipoPartido = 0;
+    switch (tipo) {
+      case 'liga': factorTipoPartido = 2.2; break;
+      case 'reto': factorTipoPartido = 1.8; break;
+      case 'amistoso': factorTipoPartido = 0.8; break;
+      default: factorTipoPartido = 0.8;
+    }
+    
+    // 5.5 FACTOR POSICIÓN RANKING (0.8-2.2 puntos - AJUSTADO)
+    const rankingActual = [...jugadores].sort((a,b) => b.rating - a.rating);
+    const posicionActual = rankingActual.findIndex(j => j.id === jugador.id) + 1;
+    const totalJugadores = jugadores.length;
+    let factorPosicionRanking = 0;
+    
+    if (posicionActual > totalJugadores * 0.7) factorPosicionRanking = 2.2; // Desafiante
+    else if (posicionActual < totalJugadores * 0.3) factorPosicionRanking = -1.5; // Favorito
+    else factorPosicionRanking = 0; // Posición media
+    
+    // 5.6 FACTOR EXPERIENCIA (0.5-1.8 puntos - AJUSTADO)
+    const partidosPromedio = jugadores.reduce((sum, j) => sum + j.partidosJugados, 0) / jugadores.length;
+    const factorExperiencia = Math.min(1.8, Math.max(-1.8, (jugador.partidosJugados - partidosPromedio) * 0.08));
+    
+    // 5.7 FACTOR RACHA (0.5-1.5 puntos - AJUSTADO)
+    let factorRacha = 0;
+    if (jugador.partidosJugados > 0) {
+      const porcentajeVictorias = (jugador.victorias / jugador.partidosJugados) * 100;
+      if (porcentajeVictorias < 30) factorRacha = 1.5; // Jugador en mala racha
+      else if (porcentajeVictorias > 70) factorRacha = -0.8; // Jugador en buena racha
+      else factorRacha = 0; // Racha equilibrada
+    }
+    
+    // 5.8 FACTOR CONSISTENCIA (0.3-0.8 puntos - AJUSTADO)
+    let factorConsistencia = 0;
+    if (jugador.historial.length > 3) {
+      const ultimos3 = jugador.historial.slice(-3);
+      const variacion = Math.abs(ultimos3[2] - ultimos3[0]) / ultimos3[0];
+      if (variacion < 0.1) factorConsistencia = 0.8; // Muy consistente
+      else if (variacion > 0.3) factorConsistencia = -0.6; // Muy inconsistente
+    }
+    
+    // 5.9 FACTOR INTENSIDAD (0.4-1.2 puntos - AJUSTADO)
+    let factorIntensidad = 0;
+    if (totalJuegos > 20) factorIntensidad = 1.2; // Partido muy intenso
+    else if (totalJuegos > 15) factorIntensidad = 0.8; // Partido intenso
+    else factorIntensidad = 0; // Partido normal
+    
+    // 5.10 FACTOR CLUTCH (0.3-1.5 puntos - AJUSTADO)
+    let factorClutch = 0;
+    const diffSets = Math.abs(setsGanados - setsPerdidos);
+    if (diffSets === 1 && diffJuegos <= 3) {
+      factorClutch = esGanador ? 1.5 : -0.8; // Bonus para ganador en partido cerrado
+    }
+    
+    // SUMAR TODAS LAS VARIABLES INDIVIDUALES
+    const sumaVariables = factorMarcador + factorDificultadRivales + factorNivelCompanero + 
+                         factorTipoPartido + factorPosicionRanking + factorExperiencia + 
+                         factorRacha + factorConsistencia + factorIntensidad + factorClutch;
+    
+    // DIVIDIR ENTRE 2.5 (media ajustada para reducir puntuación total)
+    const mediaVariables = sumaVariables / 2.5;
+    
+    // CALCULAR PUNTUACIÓN FINAL
+    const puntuacionBase = factorBase * factorDiferencia * multiplicadorNivel;
+    const puntuacionFinal = puntuacionBase + mediaVariables;
+    
+    console.log(`🧮 Cálculo para ${jugador.nombre}:`, {
+      factorBase, factorDiferencia, multiplicadorNivel, tipoPartido,
+      puntuacionBase: puntuacionBase.toFixed(1),
+      sumaVariables, mediaVariables: mediaVariables.toFixed(1),
+      puntuacionFinal: puntuacionFinal.toFixed(1)
+    });
+    
+    return {
+      puntosBase: puntosBase,
+      factorBase: factorBase,
+      factorDiferencia: factorDiferencia,
+      multiplicadorNivel: multiplicadorNivel,
+      tipoPartido: tipoPartido,
+      factorMarcador: factorMarcador,
+      factorDificultadRivales: factorDificultadRivales,
+      factorNivelCompanero: factorNivelCompanero,
+      factorTipoPartido: factorTipoPartido,
+      factorPosicionRanking: factorPosicionRanking,
+      factorExperiencia: factorExperiencia,
+      factorRacha: factorRacha,
+      factorConsistencia: factorConsistencia,
+      factorIntensidad: factorIntensidad,
+      factorClutch: factorClutch,
+      sumaVariables: sumaVariables,
+      mediaVariables: mediaVariables,
+      puntuacionBase: puntuacionBase,
+      factorCompanero: factorNivelCompanero, // Para compatibilidad
+      factorRivales: factorDificultadRivales, // Para compatibilidad
+      factorDificultadCompanero: 0, // No aplica en sistema cuántico
+      factorDificultadRivales: factorDificultadRivales, // Para compatibilidad
+      factorPosicion: factorPosicionRanking, // Para compatibilidad
+      factorTipoIndividual: factorTipoPartido, // Para compatibilidad
+      factorAntiSandbagging: 0, // No aplica en sistema cuántico
+      factorHistorial: 0, // No aplica en sistema cuántico
+      factorRendimientoVsRivales: 0, // No aplica en sistema cuántico
+      factorRendimientoVsCompanero: 0, // No aplica en sistema cuántico
+      factorPresion: 0, // No aplica en sistema cuántico
+      factorSetsEspecificos: 0, // No aplica en sistema cuántico
+      factorJuegosEspecificos: factorMarcador, // Para compatibilidad
+      factorRatingPartido: 0, // No aplica en sistema cuántico
+      factorNivelPartido: 0, // No aplica en sistema cuántico
+      factorPosicionPartido: factorPosicionRanking, // Para compatibilidad
+      puntosIndividuales: puntuacionFinal,
+      puntosFinal: puntuacionFinal
+    };
+  }
+  
+  [A1, A2, B1, B2].forEach(jug => {
+    // Validación inicial de datos
+    if (!jug || !jug.nivel || !jug.rating || isNaN(jug.nivel) || isNaN(jug.rating)) {
+      console.warn(`⚠️ Datos inválidos para jugador:`, jug);
+      return; // Saltar este jugador
+    }
+    
+    const esGanador = (jug === A1 || jug === A2) ? resultado.ganador === 'local' : resultado.ganador === 'visitante';
+    const comp = (jug === A1) ? A2 : (jug === A2) ? A1 : (jug === B1) ? B2 : B1;
+    const rivales = (jug === A1 || jug === A2) ? [B1, B2] : [A1, A2];
+    
+    // Validar compañero y rivales
+    if (!comp || !rivales[0] || !rivales[1]) {
+      console.warn(`⚠️ Datos inválidos para compañero o rivales de ${jug.nombre}`);
+      return;
+    }
+    
+    const rankingActual = [...jugadores].sort((a,b) => b.rating - a.rating);
+    const posicionActual = rankingActual.findIndex(j => j.id === jug.id) + 1;
+    
+    // Calcular puntos según la lógica cuántica del sistema
+    let puntosCambio = 0;
+    let factoresCalculados = {};
+    
+    if (esGanador) {
+      // Para ganadores
+      const puntosRival = (rivales[0].rating + rivales[1].rating) / 2;
+      const puntosGanador = jug.rating;
+      const setsGanados = Math.max(resultado.setsLocal, resultado.setsVisitante);
+      const setsPerdidos = Math.min(resultado.setsLocal, resultado.setsVisitante);
+      
+      console.log(`🔍 Calculando para ganador ${jug.nombre}:`, {
+        setsGanados, setsPerdidos, puntosGanador, puntosRival, tipo: partido.tipo,
+        rivales: rivales.map(r => ({ nombre: r.nombre, nivel: r.nivel })),
+        comp: { nombre: comp.nombre, nivel: comp.nivel }
+      });
+      
+      factoresCalculados = calcularPuntosEvento(setsGanados, setsPerdidos, puntosGanador, puntosRival, partido.tipo, jug, comp, rivales, resultado);
+      puntosCambio = Math.round(factoresCalculados.puntosFinal);
+      
+      console.log(`📊 Factores calculados para ${jug.nombre}:`, factoresCalculados);
+    } else {
+      // Para perdedores
+      const puntosRival = (rivales[0].rating + rivales[1].rating) / 2;
+      const puntosPerdedor = jug.rating;
+      const setsGanados = Math.min(resultado.setsLocal, resultado.setsVisitante);
+      const setsPerdidos = Math.max(resultado.setsLocal, resultado.setsVisitante);
+      
+      console.log(`🔍 Calculando para perdedor ${jug.nombre}:`, {
+        setsGanados, setsPerdidos, puntosPerdedor, puntosRival, tipo: partido.tipo,
+        rivales: rivales.map(r => ({ nombre: r.nombre, nivel: r.nivel })),
+        comp: { nombre: comp.nombre, nivel: comp.nivel }
+      });
+      
+      factoresCalculados = calcularPuntosEvento(setsGanados, setsPerdidos, puntosPerdedor, puntosRival, partido.tipo, jug, comp, rivales, resultado);
+      puntosCambio = -Math.round(factoresCalculados.puntosFinal * 0.65); // Los perdedores pierden 65% de puntos (más penalización)
+      
+      console.log(`📊 Factores calculados para ${jug.nombre}:`, factoresCalculados);
+    }
+    
+    // Validación final para evitar valores inválidos
+    if (!isFinite(puntosCambio) || isNaN(puntosCambio)) {
+      console.warn(`⚠️ Valor inválido detectado para ${jug.nombre}: ${puntosCambio}. Aplicando valor por defecto.`);
+      puntosCambio = esGanador ? 10 : -10; // Valor por defecto seguro
+    }
+    
+    // SIN LÍMITES MÁXIMOS/MÍNIMOS - Dejar que el sistema sea natural
+    // Solo protección mínima de rating para evitar valores negativos
+    const newRating = jug.rating + puntosCambio;
+    if (newRating < 50) {
+      puntosCambio = 50 - jug.rating;
+    }
+    
+    // Añadir pequeñas variaciones aleatorias para diferenciar más a los jugadores
+    const variacionAleatoria = (Math.random() - 0.5) * 0.8; // ±0.4 puntos de variación
+    puntosCambio += variacionAleatoria;
+    
+    // Guardar información detallada con factores individuales calculados
+    cambiosJugadores.push({
+      jugador: jug,
+      cambio: puntosCambio,
+      esGanador: esGanador,
+      posicion: posicionActual,
+      baseElo: factoresCalculados.puntosBase || puntosCambio,
+      factorBase: factoresCalculados.factorBase || 0,
+      factorNivelReal: factoresCalculados.factorNivelReal || 0,
+      factorCompanero: factoresCalculados.factorCompanero || 0,
+      factorRivales: factoresCalculados.factorRivales || 0,
+      factorDificultadCompanero: factoresCalculados.factorDificultadCompanero || 0,
+      factorDificultadRivales: factoresCalculados.factorDificultadRivales || 0,
+      factorRating: factoresCalculados.factorRating || 0,
+      factorDificultad: 0, // Ya incluido en puntosBase
+      factorAntiSandbagging: factoresCalculados.factorAntiSandbagging || 0,
+      factorEstabilidad: factoresCalculados.factorEstabilidad || 0,
+      factorConsistencia: factoresCalculados.factorConsistencia || 0,
+      factorHistorial: factoresCalculados.factorHistorial || 0,
+      factorRendimientoVsRivales: factoresCalculados.factorRendimientoVsRivales || 0,
+      factorRendimientoVsCompanero: factoresCalculados.factorRendimientoVsCompanero || 0,
+      factorMomentum: factoresCalculados.factorMomentum || 0,
+      factorPresion: factoresCalculados.factorPresion || 0,
+      factorExperiencia: factoresCalculados.factorExperiencia || 0,
+      factorTipoPartido: factoresCalculados.factorTipoPartido || 0,
+      factorMarcador: factoresCalculados.factorMarcador || 0,
+      factorPosicionRanking: factoresCalculados.factorPosicionRanking || 0,
+      factorRacha: factoresCalculados.factorRacha || 0,
+      factorNivel: factoresCalculados.factorNivel || 0,
+      factorSetsEspecificos: factoresCalculados.factorSetsEspecificos || 0,
+      factorJuegosEspecificos: factoresCalculados.factorMarcador || 0,
+      factorRatingPartido: factoresCalculados.factorRatingPartido || 0,
+      factorNivelPartido: factoresCalculados.factorNivelPartido || 0,
+      factorPosicionPartido: factoresCalculados.factorPosicionPartido || 0,
+      variablesIndividuales: factoresCalculados.puntosIndividuales || 0,
+      partidosJugados: jug.partidosJugados,
+      nivel: jug.nivel,
+      rating: jug.rating,
+      dificultadRivales: 1, // Valor por defecto
+      dificultadPartido: 1 // Valor por defecto
+    });
+    
+    // Actualizar jugador
+    jug.rating += puntosCambio;
+    jug.historial.push(jug.rating);
+    jug.partidosJugados++;
+    if (esGanador) jug.victorias++;
+  });
+  
+  return {
+    partido,
+    resultado,
+    jugadores: [A1, A2, B1, B2],
+    puntos: [A1.rating, A2.rating, B1.rating, B2.rating],
+    cambios: cambiosJugadores
+  };
+}
+
+// Función principal para cargar y simular
+window.cargarYSimular = async function() {
+  try {
+    document.getElementById('partidos-container').innerHTML = '<div class="loading">🔄 Cargando usuarios, equipos y partidos...</div>';
+    
+    console.log('🚀 Iniciando simulación de partidos reales...');
+    
+    // Cargar usuarios (todos empiezan con 500 puntos)
+    console.log('👥 Cargando usuarios...');
+    await cargarUsuarios();
+    console.log(`✅ ${jugadores.length} usuarios cargados`);
+    
+    // Cargar equipos
+    console.log('🏆 Cargando equipos...');
+    const equipos = await cargarEquipos();
+    console.log(`✅ ${Object.keys(equipos).length} equipos cargados`);
+    
+    // Obtener partidos
+    console.log('📊 Obteniendo partidos del calendario...');
+    const partidos = await obtenerPartidosCalendario();
+    
+    if (partidos.length === 0) {
+      document.getElementById('partidos-container').innerHTML = `
+        <div class="no-partidos">
+          <h3>❌ No se encontraron partidos para simular</h3>
+          <p>No hay partidos con resultados válidos en la base de datos.</p>
+          <p>Verifica que:</p>
+          <ul>
+            <li>Existan partidos en las colecciones: calendario, partidosAmistosos, partidosReto</li>
+            <li>Los partidos tengan resultados registrados (set1, set2, set3)</li>
+            <li>Los partidos tengan equipos o jugadores asignados</li>
+          </ul>
+          <p>Revisa la consola del navegador para más detalles.</p>
+        </div>
+      `;
+      return;
+    }
+    
+    // Mostrar estadísticas iniciales
+    document.getElementById('stats').style.display = 'block';
+    document.getElementById('total-partidos').textContent = partidos.length;
+    document.getElementById('usuarios-activos').textContent = jugadores.length;
+    
+    // Calcular estadísticas avanzadas
+    const ratingPromedio = jugadores.reduce((sum, j) => sum + j.rating, 0) / jugadores.length;
+    const nivelPromedio = jugadores.reduce((sum, j) => sum + j.nivel, 0) / jugadores.length;
+    document.getElementById('rating-promedio').textContent = ratingPromedio.toFixed(1);
+    document.getElementById('nivel-promedio').textContent = nivelPromedio.toFixed(1);
+    
+    console.log(`🎯 Comenzando simulación de ${partidos.length} partidos...`);
+    
+    // Simular partidos uno a uno desde el más antiguo
+    partidosSimulados = [];
+    
+    for (let i = 0; i < partidos.length; i++) {
+      const partido = partidos[i];
+      console.log(`🎾 Simulando partido ${i + 1}/${partidos.length}: ${partido.tipo} - ${partido.id}`);
+      
+      const simulacion = simularPartido(partido, equipos);
+      if (simulacion) {
+        partidosSimulados.push(simulacion);
+        
+        // CALCULAR POSICIÓN DESPUÉS DE CADA PARTIDO
+        const rankingActual = [...jugadores].sort((a,b) => b.rating - a.rating);
+        jugadores.forEach(jug => {
+          jug.posicionActual = rankingActual.findIndex(j => j.id === jug.id) + 1;
+        });
+        
+        // Mostrar progreso con información del partido
+        const fecha = partido.fecha.toLocaleDateString('es-ES');
+        const hora = partido.fecha.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+        
+        let progresoHTML = `
+          <div class="loading">
+            <h4>🎾 Procesando partido ${i + 1} de ${partidos.length}</h4>
+            <p><strong>📅 Fecha:</strong> ${fecha} ${hora}</p>
+            <p><strong>🏷️ Tipo:</strong> ${partido.tipo.toUpperCase()}</p>
+            <p><strong>🏆 Resultado:</strong> ${simulacion.resultado.setsLocal}-${simulacion.resultado.setsVisitante} (${simulacion.resultado.juegosLocal}-${simulacion.resultado.juegosVisitante})</p>
+            
+            <div style="background: #ecf0f1; padding: 10px; border-radius: 8px; margin: 15px 0;">
+              <h5 style="margin: 0 0 10px 0; color: #2c3e50;">🎯 Resumen del Partido:</h5>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                <div style="background: white; padding: 8px; border-radius: 5px; border-left: 4px solid #3498db;">
+                  <strong>Equipo Ganador:</strong><br>
+                  ${simulacion.jugadores[0].nombre} (${simulacion.jugadores[0].nivel}) + ${simulacion.jugadores[1].nombre} (${simulacion.jugadores[1].nivel})
+                </div>
+                <div style="background: white; padding: 8px; border-radius: 5px; border-left: 4px solid #e74c3c;">
+                  <strong>Equipo Perdedor:</strong><br>
+                  ${simulacion.jugadores[2].nombre} (${simulacion.jugadores[2].nivel}) + ${simulacion.jugadores[3].nombre} (${simulacion.jugadores[3].nivel})
+                </div>
+                <div style="background: white; padding: 8px; border-radius: 5px; border-left: 4px solid #f39c12;">
+                  <strong>Dificultad Promedio:</strong><br>
+                  ${((simulacion.jugadores[0].nivel + simulacion.jugadores[1].nivel + simulacion.jugadores[2].nivel + simulacion.jugadores[3].nivel) / 4).toFixed(1)}
+                </div>
+                <div style="background: white; padding: 8px; border-radius: 5px; border-left: 4px solid #27ae60;">
+                  <strong>Rating Promedio:</strong><br>
+                  ${((simulacion.jugadores[0].rating + simulacion.jugadores[1].rating + simulacion.jugadores[2].rating + simulacion.jugadores[3].rating) / 4).toFixed(0)}
+                </div>
+              </div>
+            </div>
+            
+            <div class="puntos-partido">
+              <h5>📈 Análisis detallado de puntos por jugador:</h5>
+        `;
+        
+        simulacion.cambios.forEach(cambio => {
+          const color = cambio.cambio >= 0 ? 'green' : 'red';
+          const signo = cambio.cambio >= 0 ? '+' : '';
+          const dificultadColor = cambio.dificultadRivales > 1.1 ? 'orange' : cambio.dificultadRivales < 0.9 ? 'blue' : 'black';
+          
+          progresoHTML += `
+            <div class="punto-progreso">
+              <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <div>
+                  <span class="jugador-progreso">👤 ${cambio.jugador.nombre}</span>
+                  <span class="punto-progreso-valor" style="color: ${color}">${signo}${cambio.cambio.toFixed(1)}</span>
+                  <span class="posicion-progreso">(Pos: ${cambio.posicion} → ${cambio.jugador.posicionActual})</span>
+                </div>
+                <div style="text-align: right; font-size: 0.8em;">
+                  <div style="color: ${dificultadColor};">Dificultad: ${cambio.dificultadRivales.toFixed(2)}</div>
+                  <div>Nivel: ${cambio.nivel} | Rating: ${cambio.rating.toFixed(0)}</div>
+                </div>
+              </div>
+                          <div style="font-size: 0.7em; color: #666; margin-top: 5px;">
+              <details style="margin-top: 10px;">
+                <summary style="cursor: pointer; font-weight: bold; color: #2c3e50; background: #ecf0f1; padding: 5px; border-radius: 3px;">
+                  📊 Desglose Cuántico Detallado - Cálculo de Puntuación
+                </summary>
+                <div style="background: #f8f9fa; padding: 10px; border-radius: 5px; margin-top: 5px;">
+                  
+                  <!-- CÁLCULO PASO A PASO -->
+                  <div style="background: #2c3e50; color: white; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+                    <h6 style="margin: 0 0 10px 0; text-align: center; font-size: 1.1em;">🧮 CÁLCULO PASO A PASO</h6>
+                    <div style="font-family: monospace; font-size: 0.9em; line-height: 1.4;">
+                      <div style="margin-bottom: 5px;">Tipo Partido: ${cambio.tipoPartido || 'N/A'} (${cambio.multiplicadorNivel ? cambio.multiplicadorNivel.toFixed(1) : '1.0'}x)</div>
+                      <div style="margin-bottom: 5px;">Victoria Base: ${cambio.factorBase ? cambio.factorBase.toFixed(1) : '0.0'} pts</div>
+                      <div style="margin-bottom: 5px;">× Diferencia: ${cambio.factorDiferencia ? cambio.factorDiferencia.toFixed(1) : '1.0'}x</div>
+                      <div style="margin-bottom: 5px;">× Multiplicador: ${cambio.multiplicadorNivel ? cambio.multiplicadorNivel.toFixed(1) : '1.0'}x</div>
+                      <div style="margin-bottom: 5px;">= Base: ${cambio.puntuacionBase ? cambio.puntuacionBase.toFixed(1) : '0.0'} pts</div>
+                      <div style="margin-bottom: 5px;">+ Media Variables: ${cambio.mediaVariables ? cambio.mediaVariables.toFixed(1) : '0.0'} pts</div>
+                      <div style="margin-bottom: 5px;">= Total: ${cambio.cambio >= 0 ? '+' : ''}${cambio.cambio.toFixed(1)} pts</div>
+                    </div>
+                  </div>
+                  
+                  <!-- FACTORES CUÁNTICOS DETALLADOS -->
+                  <h6 style="margin: 10px 0 5px 0; color: #2c3e50; text-align: center;">🎯 FACTORES CUÁNTICOS REALISTAS (${cambio.puntosIndividuales ? cambio.puntosIndividuales.toFixed(1) : '0.0'} pts total)</h6>
+                  
+                  <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px; margin-bottom: 10px;">
+                    <div style="background: white; padding: 5px; border-radius: 3px; border-left: 4px solid #e74c3c;">
+                      <strong>Factor Base:</strong> ${cambio.factorBase ? cambio.factorBase.toFixed(1) : '0.0'}
+                      <br><small style="color: #7f8c8d;">${cambio.factorBase > 0 ? '✅ Victoria' : cambio.factorBase < 0 ? '❌ Derrota' : '⚖️ Empate'}</small>
+                    </div>
+                    <div style="background: white; padding: 5px; border-radius: 3px; border-left: 4px solid #8e44ad;">
+                      <strong>Nivel Real:</strong> ${cambio.factorNivelReal ? cambio.factorNivelReal.toFixed(1) : '0.0'}
+                      <br><small style="color: #7f8c8d;">${cambio.factorNivelReal > 0 ? '👑 Nivel superior' : cambio.factorNivelReal < 0 ? '📊 Nivel inferior' : '⚖️ Nivel promedio'}</small>
+                    </div>
+                    <div style="background: white; padding: 5px; border-radius: 3px; border-left: 4px solid #3498db;">
+                      <strong>Dificultad Rivales:</strong> ${cambio.factorDificultadRivales ? cambio.factorDificultadRivales.toFixed(1) : '0.0'}
+                      <br><small style="color: #7f8c8d;">${cambio.factorDificultadRivales > 0 ? '🔥 Rivales superiores' : cambio.factorDificultadRivales < 0 ? '😴 Rivales inferiores' : '⚖️ Rivales equilibrados'}</small>
+                    </div>
+                    <div style="background: white; padding: 5px; border-radius: 3px; border-left: 4px solid #f39c12;">
+                      <strong>Nivel Compañero:</strong> ${cambio.factorNivelCompanero ? cambio.factorNivelCompanero.toFixed(1) : '0.0'}
+                      <br><small style="color: #7f8c8d;">${cambio.factorNivelCompanero > 0 ? '👑 Superior al compañero' : cambio.factorNivelCompanero < 0 ? '🤝 Ayudado por compañero' : '⚖️ Niveles equilibrados'}</small>
+                    </div>
+                    <div style="background: white; padding: 5px; border-radius: 3px; border-left: 4px solid #27ae60;">
+                      <strong>Factor Marcador:</strong> ${cambio.factorMarcador ? cambio.factorMarcador.toFixed(1) : '0.0'}
+                      <br><small style="color: #7f8c8d;">${cambio.factorMarcador > 0 ? '💪 Victoria dominante' : cambio.factorMarcador < 0 ? '😰 Derrota aplastante' : '⚖️ Resultado ajustado'}</small>
+                    </div>
+                    <div style="background: white; padding: 5px; border-radius: 3px; border-left: 4px solid #9b59b6;">
+                      <strong>Tipo Partido:</strong> ${cambio.factorTipoPartido ? cambio.factorTipoPartido.toFixed(1) : '0.0'}
+                      <br><small style="color: #7f8c8d;">${partido.tipo.toUpperCase()} - ${cambio.factorTipoPartido > 5 ? '🏆 Muy importante' : cambio.factorTipoPartido > 3 ? '⚔️ Importante' : '🤝 Menos importante'}</small>
+                    </div>
+                  </div>
+                  
+                  <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px; margin-bottom: 10px;">
+                    <div style="background: white; padding: 5px; border-radius: 3px; border-left: 4px solid #1abc9c;">
+                      <strong>Factor Racha:</strong> ${cambio.factorRacha ? cambio.factorRacha.toFixed(1) : '0.0'}
+                      <br><small style="color: #7f8c8d;">${cambio.factorRacha > 0 ? '📈 En mala racha' : cambio.factorRacha < 0 ? '🔥 En buena racha' : '⚖️ Racha equilibrada'}</small>
+                    </div>
+                    <div style="background: white; padding: 5px; border-radius: 3px; border-left: 4px solid #34495e;">
+                      <strong>Experiencia:</strong> ${cambio.factorExperiencia ? cambio.factorExperiencia.toFixed(1) : '0.0'}
+                      <br><small style="color: #7f8c8d;">${cambio.factorExperiencia > 0 ? '🎓 Jugador experimentado' : cambio.factorExperiencia < 0 ? '🆕 Jugador inexperto' : '⚖️ Experiencia media'}</small>
+                    </div>
+                    <div style="background: white; padding: 5px; border-radius: 3px; border-left: 4px solid #16a085;">
+                      <strong>Rating vs Promedio:</strong> ${cambio.factorRating ? cambio.factorRating.toFixed(1) : '0.0'}
+                      <br><small style="color: #7f8c8d;">${cambio.factorRating > 0 ? '⭐ Rating alto' : cambio.factorRating < 0 ? '📉 Rating bajo' : '⚖️ Rating medio'}</small>
+                    </div>
+                    <div style="background: white; padding: 5px; border-radius: 3px; border-left: 4px solid #8e44ad;">
+                      <strong>Nivel vs Promedio:</strong> ${cambio.factorNivel ? cambio.factorNivel.toFixed(1) : '0.0'}
+                      <br><small style="color: #7f8c8d;">${cambio.factorNivel > 0 ? '🏆 Nivel superior' : cambio.factorNivel < 0 ? '📊 Nivel inferior' : '⚖️ Nivel equilibrado'}</small>
+                    </div>
+                    <div style="background: white; padding: 5px; border-radius: 3px; border-left: 4px solid #d35400;">
+                      <strong>Consistencia:</strong> ${cambio.factorConsistencia ? cambio.factorConsistencia.toFixed(1) : '0.0'}
+                      <br><small style="color: #7f8c8d;">${cambio.factorConsistencia > 0 ? '🎯 Muy consistente' : cambio.factorConsistencia < 0 ? '📈 Muy inconsistente' : '⚖️ Consistencia media'}</small>
+                    </div>
+                    <div style="background: white; padding: 5px; border-radius: 3px; border-left: 4px solid #c0392b;">
+                      <strong>Momentum:</strong> ${cambio.factorMomentum ? cambio.factorMomentum.toFixed(1) : '0.0'}
+                      <br><small style="color: #7f8c8d;">${cambio.factorMomentum > 0 ? '🚀 Momentum positivo' : cambio.factorMomentum < 0 ? '📉 Momentum negativo' : '⚖️ Momentum neutro'}</small>
+                    </div>
+                  </div>
+                  
+                  <!-- SUMA TOTAL -->
+                  <div style="background: #27ae60; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; margin-top: 15px;">
+                    <div style="font-size: 1.2em; margin-bottom: 5px;">
+                      🧮 SUMA TOTAL DE FACTORES CUÁNTICOS
+                    </div>
+                    <div style="font-family: monospace; font-size: 1.1em; background: rgba(255,255,255,0.2); padding: 5px; border-radius: 3px;">
+                      ${cambio.factorBase ? cambio.factorBase.toFixed(1) : '0.0'} + ${cambio.factorDificultadRivales ? cambio.factorDificultadRivales.toFixed(1) : '0.0'} + ${cambio.factorNivelCompanero ? cambio.factorNivelCompanero.toFixed(1) : '0.0'} + ${cambio.factorMarcador ? cambio.factorMarcador.toFixed(1) : '0.0'} + ${cambio.factorTipoPartido ? cambio.factorTipoPartido.toFixed(1) : '0.0'} + ${cambio.factorPosicionRanking ? cambio.factorPosicionRanking.toFixed(1) : '0.0'} + ${cambio.factorRacha ? cambio.factorRacha.toFixed(1) : '0.0'} + ${cambio.factorExperiencia ? cambio.factorExperiencia.toFixed(1) : '0.0'} + ${cambio.factorRating ? cambio.factorRating.toFixed(1) : '0.0'} + ${cambio.factorNivel ? cambio.factorNivel.toFixed(1) : '0.0'} + ${cambio.factorConsistencia ? cambio.factorConsistencia.toFixed(1) : '0.0'} + ${cambio.factorMomentum ? cambio.factorMomentum.toFixed(1) : '0.0'} = ${cambio.puntosIndividuales ? cambio.puntosIndividuales.toFixed(1) : '0.0'}
+                    </div>
+                  </div>
+                  
+                  <!-- RESULTADO FINAL -->
+                  <div style="background: #2c3e50; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; margin-top: 10px;">
+                    <div style="font-size: 1.3em; margin-bottom: 5px;">
+                      🎯 PUNTUACIÓN FINAL: ${cambio.cambio >= 0 ? '+' : ''}${cambio.cambio.toFixed(1)} puntos
+                    </div>
+                    <div style="font-size: 1em; margin-top: 5px;">
+                      ${cambio.esGanador ? '🎉 VICTORIA' : '😔 DERROTA'} | Posición: ${cambio.posicion} → ${cambio.jugador.posicionActual}
+                    </div>
+                    <div style="font-size: 0.9em; margin-top: 3px; opacity: 0.8;">
+                      Rating anterior: ${cambio.rating.toFixed(0)} → Nuevo: ${(cambio.rating + cambio.cambio).toFixed(0)}
+                    </div>
+                  </div>
+                </div>
+              </details>
+            </div>
+            </div>
+          `;
+        });
+        
+        progresoHTML += `
+            </div>
+            <div class="ranking-actual">
+              <h5>🏅 Top 5 actual:</h5>
+              <ol>
+        `;
+        
+        rankingActual.slice(0, 5).forEach((jug, index) => {
+          progresoHTML += `<li>${jug.nombre} - ${jug.rating.toFixed(1)} pts (${jug.partidosJugados} partidos)</li>`;
+        });
+        
+        progresoHTML += `
+              </ol>
+            </div>
+          </div>
+        `;
+        
+        document.getElementById('partidos-container').innerHTML = progresoHTML;
+        
+        // Pequeña pausa para mostrar el progreso
+        await new Promise(resolve => setTimeout(resolve, 100));
+      } else {
+        console.log(`❌ No se pudo simular el partido ${partido.id}`);
+      }
+    }
+    
+    console.log(`✅ Simulación completada. ${partidosSimulados.length} partidos simulados.`);
+    
+    // Mostrar partidos simulados
+    mostrarPartidosSimulados();
+    
+    // Actualizar ranking
+    updateRanking();
+    
+    // Actualizar gráfico
+    updateChart();
+    
+  } catch (error) {
+    console.error('❌ Error en simulación:', error);
+    document.getElementById('partidos-container').innerHTML = 
+      `<div class="loading">❌ Error: ${error.message}</div>`;
+  }
+};
+
+// Función para mostrar partidos simulados
+function mostrarPartidosSimulados() {
+  const container = document.getElementById('partidos-container');
+  container.innerHTML = '';
+  
+  if (partidosSimulados.length === 0) {
+    container.innerHTML = '<div class="no-partidos">No se encontraron partidos para simular</div>';
+    return;
+  }
+  
+  partidosSimulados.forEach((sim, index) => {
+    const partido = sim.partido;
+    const resultado = sim.resultado;
+    const fecha = partido.fecha.toLocaleDateString('es-ES');
+    const hora = partido.fecha.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+    
+    // Generar información de puntos ganados con explicación detallada
+    let puntosInfo = '';
+    if (sim.cambios) {
+      puntosInfo = '<div class="puntos-detalle">';
+      sim.cambios.forEach(cambio => {
+        const color = cambio.cambio >= 0 ? 'green' : 'red';
+        const signo = cambio.cambio >= 0 ? '+' : '';
+        
+        // Explicación resumida de por qué obtiene esos puntos
+        let explicacion = '';
+        if (cambio.esGanador) {
+          if (cambio.dificultadRivales > 1.2) {
+            explicacion = '🎯 Victoria difícil vs rivales superiores';
+          } else if (cambio.dificultadRivales < 0.8) {
+            explicacion = '⚡ Victoria fácil vs rivales inferiores';
+          } else {
+            explicacion = '✅ Victoria equilibrada';
+          }
+        } else {
+          if (cambio.dificultadRivales > 1.2) {
+            explicacion = '😔 Derrota esperada vs rivales superiores';
+          } else if (cambio.dificultadRivales < 0.8) {
+            explicacion = '😤 Derrota inesperada vs rivales inferiores';
+          } else {
+            explicacion = '🤝 Derrota equilibrada';
+          }
+        }
+        
+        // Añadir información sobre el compañero
+        if (Math.abs(cambio.factorCompanero) > 2) {
+          if (cambio.factorCompanero > 0) {
+            explicacion += ' | 👥 Ayudado por compañero';
+          } else {
+            explicacion += ' | 🏋️ Cargando al compañero';
+          }
+        }
+        
+        // Añadir información sobre el tipo de partido
+        if (cambio.factorTipoPartido > 1) {
+          explicacion += ' | 🏆 Partido importante';
+        }
+        
+        puntosInfo += `
+          <div class="punto-jugador">
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+              <div>
+                <span class="jugador-nombre">${cambio.jugador.nombre}</span>
+                <span class="punto-valor" style="color: ${color}">${signo}${cambio.cambio.toFixed(1)}</span>
+                <span class="punto-detalle">(Pos: ${cambio.posicion} → ${cambio.jugador.posicionActual}, Partidos: ${cambio.partidosJugados})</span>
+              </div>
+              <div style="text-align: right; font-size: 0.8em; color: #7f8c8d;">
+                <div>Nivel: ${cambio.nivel} | Rating: ${cambio.rating.toFixed(0)}</div>
+                <div>Dificultad: ${cambio.dificultadRivales.toFixed(2)}</div>
+              </div>
+            </div>
+            <div style="font-size: 0.8em; color: #2c3e50; margin-top: 5px; font-style: italic;">
+              ${explicacion}
+            </div>
+            <details style="margin-top: 8px;">
+              <summary style="cursor: pointer; font-size: 0.7em; color: #3498db; font-weight: bold;">
+                🧮 Ver cálculo cuántico detallado
+              </summary>
+              <div style="background: #f8f9fa; padding: 8px; border-radius: 5px; margin-top: 5px; font-size: 0.7em;">
+                
+                <!-- CÁLCULO PASO A PASO -->
+                <div style="background: #2c3e50; color: white; padding: 8px; border-radius: 3px; margin-bottom: 8px; text-align: center;">
+                  <div style="font-weight: bold; margin-bottom: 3px;">🧮 CÁLCULO PASO A PASO</div>
+                  <div style="font-family: monospace; font-size: 0.8em;">
+                    Base: ${cambio.baseElo ? cambio.baseElo.toFixed(1) : 'N/A'} + Cuánticos: ${cambio.puntosIndividuales ? cambio.puntosIndividuales.toFixed(1) : '0.0'} = ${cambio.cambio >= 0 ? '+' : ''}${cambio.cambio.toFixed(1)}
+                  </div>
+                </div>
+                
+                <!-- FACTORES CUÁNTICOS -->
+                <div style="margin-bottom: 8px;">
+                  <div style="font-weight: bold; color: #2c3e50; margin-bottom: 3px;">🎯 Factores Cuánticos:</div>
+                  <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; margin-bottom: 5px;">
+                    <span style="background: white; padding: 2px; border-radius: 2px; border-left: 3px solid #e74c3c;">Base: ${cambio.factorBase ? cambio.factorBase.toFixed(1) : '0.0'}</span>
+                    <span style="background: white; padding: 2px; border-radius: 2px; border-left: 3px solid #3498db;">Rivales: ${cambio.factorDificultadRivales ? cambio.factorDificultadRivales.toFixed(1) : '0.0'}</span>
+                    <span style="background: white; padding: 2px; border-radius: 2px; border-left: 3px solid #f39c12;">Compañero: ${cambio.factorNivelCompanero ? cambio.factorNivelCompanero.toFixed(1) : '0.0'}</span>
+                    <span style="background: white; padding: 2px; border-radius: 2px; border-left: 3px solid #27ae60;">Marcador: ${cambio.factorMarcador ? cambio.factorMarcador.toFixed(1) : '0.0'}</span>
+                    <span style="background: white; padding: 2px; border-radius: 2px; border-left: 3px solid #9b59b6;">Tipo: ${cambio.factorTipoPartido ? cambio.factorTipoPartido.toFixed(1) : '0.0'}</span>
+                    <span style="background: white; padding: 2px; border-radius: 2px; border-left: 3px solid #e67e22;">Ranking: ${cambio.factorPosicionRanking ? cambio.factorPosicionRanking.toFixed(1) : '0.0'}</span>
+                    <span style="background: white; padding: 2px; border-radius: 2px; border-left: 3px solid #1abc9c;">Racha: ${cambio.factorRacha ? cambio.factorRacha.toFixed(1) : '0.0'}</span>
+                    <span style="background: white; padding: 2px; border-radius: 2px; border-left: 3px solid #34495e;">Exp: ${cambio.factorExperiencia ? cambio.factorExperiencia.toFixed(1) : '0.0'}</span>
+                    <span style="background: white; padding: 2px; border-radius: 2px; border-left: 3px solid #16a085;">Rating: ${cambio.factorRating ? cambio.factorRating.toFixed(1) : '0.0'}</span>
+                    <span style="background: white; padding: 2px; border-radius: 2px; border-left: 3px solid #8e44ad;">Nivel: ${cambio.factorNivel ? cambio.factorNivel.toFixed(1) : '0.0'}</span>
+                    <span style="background: white; padding: 2px; border-radius: 2px; border-left: 3px solid #d35400;">Cons: ${cambio.factorConsistencia ? cambio.factorConsistencia.toFixed(1) : '0.0'}</span>
+                    <span style="background: white; padding: 2px; border-radius: 2px; border-left: 3px solid #c0392b;">Mom: ${cambio.factorMomentum ? cambio.factorMomentum.toFixed(1) : '0.0'}</span>
+                  </div>
+                </div>
+                
+                <!-- SUMA TOTAL -->
+                <div style="background: #27ae60; color: white; padding: 5px; border-radius: 3px; text-align: center; font-weight: bold; margin-bottom: 5px;">
+                  <div style="font-size: 0.9em;">🧮 SUMA: ${cambio.puntosIndividuales ? cambio.puntosIndividuales.toFixed(1) : '0.0'} pts</div>
+                </div>
+                
+                <!-- RESULTADO FINAL -->
+                <div style="background: #2c3e50; color: white; padding: 5px; border-radius: 3px; text-align: center; font-weight: bold;">
+                  <div style="font-size: 1em;">🎯 FINAL: ${cambio.cambio >= 0 ? '+' : ''}${cambio.cambio.toFixed(1)} pts</div>
+                  <div style="font-size: 0.8em; opacity: 0.8;">${cambio.rating.toFixed(0)} → ${(cambio.rating + cambio.cambio).toFixed(0)}</div>
+                </div>
+              </div>
+            </details>
+          </div>
+        `;
+      });
+      puntosInfo += '</div>';
+    }
+    
+    const partidoDiv = document.createElement('div');
+    partidoDiv.className = 'partido-item';
+    partidoDiv.innerHTML = `
+      <div class="partido-header">
+        <span class="fecha">${fecha} ${hora}</span>
+        <span class="tipo">${partido.tipo.toUpperCase()}</span>
+      </div>
+      <div class="partido-equipos">
+        <div class="equipo ${resultado.ganador === 'local' ? 'ganador' : ''}">
+          <div class="jugadores">
+            <span class="jugador">${sim.jugadores[0].nombre} (${sim.jugadores[0].nivel})</span>
+            <span class="jugador">${sim.jugadores[1].nombre} (${sim.jugadores[1].nivel})</span>
+          </div>
+          <span class="resultado">${resultado.setsLocal}-${resultado.setsVisitante}</span>
+        </div>
+        <div class="vs">VS</div>
+        <div class="equipo ${resultado.ganador === 'visitante' ? 'ganador' : ''}">
+          <div class="jugadores">
+            <span class="jugador">${sim.jugadores[2].nombre} (${sim.jugadores[2].nivel})</span>
+            <span class="jugador">${sim.jugadores[3].nombre} (${sim.jugadores[3].nivel})</span>
+          </div>
+          <span class="resultado">${resultado.setsVisitante}-${resultado.setsLocal}</span>
+        </div>
+      </div>
+      <div class="partido-detalle">
+        <small>Juegos: ${resultado.juegosLocal}-${resultado.juegosVisitante}</small>
+      </div>
+      ${puntosInfo}
+    `;
+    container.appendChild(partidoDiv);
+  });
+}
+
+// Función para actualizar ranking
+function updateRanking() {
+  // PENALIZACIÓN REDUCIDA POR INACTIVIDAD: Solo penalizar a jugadores completamente inactivos
+  const totalPartidosSimulados = partidosSimulados.length;
+  const partidosMinimos = Math.max(2, Math.floor(totalPartidosSimulados * 0.1)); // Solo 10% de partidos o 2 mínimo
+  
+  jugadores.forEach(jug => {
+    if (jug.partidosJugados === 0) {
+      // Solo penalizar a jugadores que no han jugado NADA
+      const penalizacion = 20; // Penalización fija menor
+      jug.rating -= penalizacion;
+      
+      // Asegurar que no baje demasiado
+      if (jug.rating < 100) jug.rating = 100;
+    } else if (jug.partidosJugados < partidosMinimos && totalPartidosSimulados > 5) {
+      // Penalización muy leve para jugadores con muy pocos partidos
+      const partidosFaltantes = partidosMinimos - jug.partidosJugados;
+      const penalizacion = partidosFaltantes * 1; // Solo 1 punto por partido faltante
+      jug.rating -= penalizacion;
+      
+      // Asegurar que no baje demasiado
+      if (jug.rating < 100) jug.rating = 100;
+    }
+  });
+  
+  const sorted = [...jugadores].sort((a,b) => b.rating - a.rating);
+  document.getElementById("ranking").innerHTML =
+    "<table><tr><th>Pos</th><th>Jugador</th><th>Rating</th><th>Nivel</th><th>Partidos</th><th>Victorias</th><th>% Victorias</th><th>Evolución</th><th>Estado</th><th>Mérito</th></tr>" +
+    sorted.map((j, index) => {
+      const porcentaje = j.partidosJugados > 0 ? ((j.victorias / j.partidosJugados) * 100).toFixed(1) : '0.0';
+      const evolucion = j.historial.length > 1 ? 
+        (j.rating - j.historial[0]).toFixed(1) : '0.0';
+      const evolucionColor = j.historial.length > 1 ? 
+        (j.rating > j.historial[0] ? 'green' : j.rating < j.historial[0] ? 'red' : 'black') : 'black';
+      
+      // Estado del jugador
+      let estado = '';
+      let estadoColor = 'black';
+      if (j.partidosJugados === 0) {
+        estado = 'Inactivo';
+        estadoColor = 'red';
+      } else if (j.partidosJugados < partidosMinimos) {
+        estado = 'Poco activo';
+        estadoColor = 'orange';
+      } else {
+        estado = 'Activo';
+        estadoColor = 'green';
+      }
+      
+      // Calcular mérito individual (rating + nivel + porcentaje victorias)
+      const meritoIndividual = j.partidosJugados > 0 ? 
+        (j.rating + (j.nivel * 50) + (parseFloat(porcentaje) * 2)).toFixed(1) : 
+        (j.rating + (j.nivel * 50)).toFixed(1);
+      
+      return `<tr>
+        <td>${index + 1}</td>
+        <td>${j.nombre}</td>
+        <td>${j.rating.toFixed(1)}</td>
+        <td>${j.nivel}</td>
+        <td>${j.partidosJugados}</td>
+        <td>${j.victorias}</td>
+        <td>${porcentaje}%</td>
+        <td style="color: ${evolucionColor}">${evolucion > 0 ? '+' : ''}${evolucion}</td>
+        <td style="color: ${estadoColor}">${estado}</td>
+        <td style="font-weight: bold; color: #2c3e50;">${meritoIndividual}</td>
+      </tr>`;
+    }).join('') +
+    "</table>";
+}
+
+// Función para actualizar gráfico
+function updateChart() {
+  const ctx = document.getElementById('chart').getContext('2d');
+  if (chart) chart.destroy();
+  
+  const maxHistorial = Math.max(...jugadores.map(j => j.historial.length));
+  const labels = Array.from({length: maxHistorial}, (_, i) => i);
+  
+  chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: jugadores.map(j => ({
+        label: j.nombre,
+        data: j.historial,
+        borderWidth: 2,
+        fill: false,
+        tension: 0.3,
+        borderColor: `hsl(${Math.random()*360},70%,50%)`
+      }))
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'bottom' } },
+      scales: {
+        y: { beginAtZero: false, title: { display: true, text: 'Rating' }},
+        x: { title: { display: true, text: 'Partido' }}
+      }
+    }
+  });
+}
+
+// Función para resetear simulación
+window.resetearSimulacion = function() {
+  jugadores = [];
+  partidosSimulados = [];
+  document.getElementById('partidos-container').innerHTML = '<div class="loading">Simulación reseteada. Haz clic en "Cargar y Simular" para comenzar.</div>';
+  document.getElementById('ranking').innerHTML = '';
+  document.getElementById('stats').style.display = 'none';
+  if (chart) chart.destroy();
+};
+</script>
+</body>
+</html> 

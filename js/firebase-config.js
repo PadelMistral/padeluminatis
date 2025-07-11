@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-app.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
 import { getStorage } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-storage.js";
 
 const firebaseConfig = {
@@ -18,4 +18,15 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-export { auth, db, storage };
+// Hacer Firebase disponible globalmente
+window.firebase = { app, auth, db, storage };
+window.db = db;
+window.getDocs = getDocs;
+window.collection = collection;
+window.doc = doc;
+window.getDoc = getDoc;
+
+// Exportar para módulos ES6
+export { auth, db, app, storage };
+
+console.log('✅ Firebase configurado correctamente desde js/firebase-config.js');
