@@ -79,7 +79,7 @@ async function cargarPerfilPropio(user) {
     console.log('=> Perfil propio cargado completamente');
 }
 
-function actualizarInformacionBasica() {
+async function actualizarInformacionBasica() {
     console.log('=> Actualizando información básica...');
     const userNameElement = document.getElementById('user-name');
     if (userNameElement) {
@@ -87,9 +87,18 @@ function actualizarInformacionBasica() {
         userNameElement.textContent = nombre;
         console.log(`=> Nombre actualizado: ${nombre}`);
     }
+    
+    // Cargar datos de la colección Ranking
+    try {
+        const rankingDoc = await getDoc(doc(db, "Ranking", usuarioActual.uid));
+        if (rankingDoc.exists()) {
+            const rankingData = rankingDoc.data();
+            console.log('=> Datos de Ranking encontrados:', rankingData);
+            
+            // Actualizar nivel desde Ranking
     const userLevelElement = document.getElementById('user-level');
     if (userLevelElement) {
-        const nivel = usuarioActual.nivel || '1.5';
+                const nivel = rankingData.nivel || usuarioActual.nivel || '1.5';
         userLevelElement.textContent = nivel;
         const nivelNum = parseFloat(nivel);
         let nivelClass = 'level-1';
@@ -109,6 +118,77 @@ function actualizarInformacionBasica() {
     } else {
         console.warn('No se encontró el elemento user-level');
     }
+            
+            // Actualizar puntos ranking desde Ranking
+            const totalPointsElement = document.getElementById('total-points');
+            if (totalPointsElement) {
+                const puntosRanking = rankingData.puntosRanking || 0;
+                totalPointsElement.textContent = puntosRanking.toFixed(2);
+                console.log(`=> Puntos ranking actualizados: ${puntosRanking.toFixed(2)}`);
+            }
+            
+            // Actualizar estadísticas desde Ranking
+            actualizarElemento('total-matches', rankingData.matches || 0);
+            actualizarElemento('total-wins', rankingData.wins || 0);
+            actualizarElemento('total-losses', (rankingData.matches || 0) - (rankingData.wins || 0));
+            actualizarElemento('win-rate', (rankingData.matches || 0) > 0 ? `${(((rankingData.wins || 0) / (rankingData.matches || 1)) * 100).toFixed(1)}%` : '0%');
+            actualizarElemento('best-streak', rankingData.racha || 0);
+            actualizarElemento('current-streak', rankingData.racha || 0);
+            actualizarElemento('consecutive-matches', rankingData.racha || 0);
+            
+        } else {
+            console.log('=> No se encontraron datos en Ranking, usando datos básicos');
+            // Usar datos básicos si no hay datos en Ranking
+            const userLevelElement = document.getElementById('user-level');
+            if (userLevelElement) {
+                const nivel = usuarioActual.nivel || '1.5';
+                userLevelElement.textContent = nivel;
+                const nivelNum = parseFloat(nivel);
+                let nivelClass = 'level-1';
+                if (nivelNum >= 1 && nivelNum < 1.5) nivelClass = 'level-1';
+                else if (nivelNum >= 1.5 && nivelNum < 2) nivelClass = 'level-1-5';
+                else if (nivelNum >= 2 && nivelNum < 2.5) nivelClass = 'level-2';
+                else if (nivelNum >= 2.5 && nivelNum < 3) nivelClass = 'level-2-5';
+                else if (nivelNum >= 3 && nivelNum < 3.5) nivelClass = 'level-3';
+                else if (nivelNum >= 3.5 && nivelNum < 4) nivelClass = 'level-3-5';
+                else if (nivelNum >= 4 && nivelNum < 4.5) nivelClass = 'level-4';
+                else if (nivelNum >= 4.5 && nivelNum < 5) nivelClass = 'level-4-5';
+                else if (nivelNum >= 5) nivelClass = 'level-5';
+                userLevelElement.className = `level-badge ${nivelClass}`;
+            }
+            
+            const totalPointsElement = document.getElementById('total-points');
+            if (totalPointsElement) {
+                totalPointsElement.textContent = '0';
+            }
+        }
+    } catch (error) {
+        console.error('=> Error al cargar datos de Ranking:', error);
+        // Fallback a datos básicos
+        const userLevelElement = document.getElementById('user-level');
+        if (userLevelElement) {
+            const nivel = usuarioActual.nivel || '1.5';
+            userLevelElement.textContent = nivel;
+            const nivelNum = parseFloat(nivel);
+            let nivelClass = 'level-1';
+            if (nivelNum >= 1 && nivelNum < 1.5) nivelClass = 'level-1';
+            else if (nivelNum >= 1.5 && nivelNum < 2) nivelClass = 'level-1-5';
+            else if (nivelNum >= 2 && nivelNum < 2.5) nivelClass = 'level-2';
+            else if (nivelNum >= 2.5 && nivelNum < 3) nivelClass = 'level-2-5';
+            else if (nivelNum >= 3 && nivelNum < 3.5) nivelClass = 'level-3';
+            else if (nivelNum >= 3.5 && nivelNum < 4) nivelClass = 'level-3-5';
+            else if (nivelNum >= 4 && nivelNum < 4.5) nivelClass = 'level-4';
+            else if (nivelNum >= 4.5 && nivelNum < 5) nivelClass = 'level-4-5';
+            else if (nivelNum >= 5) nivelClass = 'level-5';
+            userLevelElement.className = `level-badge ${nivelClass}`;
+        }
+        
+        const totalPointsElement = document.getElementById('total-points');
+        if (totalPointsElement) {
+            totalPointsElement.textContent = '0';
+        }
+    }
+    
     const profilePic = document.getElementById('profile-pic');
     if (profilePic && usuarioActual.fotoPerfil) {
         profilePic.src = usuarioActual.fotoPerfil;
